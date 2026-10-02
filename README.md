@@ -8,9 +8,9 @@ Türkiye Bankalar Birliği için hazırlanan üç günlük online eğitimin uygu
 
 | Gün | Konu | Colab'da aç |
 | --- | --- | --- |
-| 1 | Temeller: embedding, ingestion, vektör arama | [Gun1_RAG_Temeller](https://colab.research.google.com/github/sharpwareco/tbb-rag-egitimi/blob/main/notebooks/Gun1_RAG_Temeller.ipynb) |
-| 2 | Cevap üretimi, RAG servisi, retrieval stratejileri, değerlendirme | [Gun2_RAG_Servis_ve_Kalite](https://colab.research.google.com/github/sharpwareco/tbb-rag-egitimi/blob/main/notebooks/Gun2_RAG_Servis_ve_Kalite.ipynb) |
-| 3 | Güvenlik ve atölye | [Gun3_Guvenlik_ve_Atolye](https://colab.research.google.com/github/sharpwareco/tbb-rag-egitimi/blob/main/notebooks/Gun3_Guvenlik_ve_Atolye.ipynb) |
+| 1 | Temeller: embedding, ingestion, vektör arama | [Gun1_RAG_Temeller](https://colab.research.google.com/github/erturkerdagi/tbb-rag-egitimi/blob/main/notebooks/Gun1_RAG_Temeller.ipynb) |
+| 2 | Cevap üretimi, RAG servisi, retrieval stratejileri, değerlendirme | [Gun2_RAG_Servis_ve_Kalite](https://colab.research.google.com/github/erturkerdagi/tbb-rag-egitimi/blob/main/notebooks/Gun2_RAG_Servis_ve_Kalite.ipynb) |
+| 3 | Güvenlik ve atölye | [Gun3_Guvenlik_ve_Atolye](https://colab.research.google.com/github/erturkerdagi/tbb-rag-egitimi/blob/main/notebooks/Gun3_Guvenlik_ve_Atolye.ipynb) |
 
 Colab'da **Çalışma zamanı > Çalışma zamanı türünü değiştir > T4 GPU** seçin.
 
