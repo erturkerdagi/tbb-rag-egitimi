@@ -1,0 +1,186 @@
+[
+ {
+  "doc_id": "krd-yon-v3",
+  "title": "Bireysel Kredi Yönergesi",
+  "version": "3",
+  "department": "bireysel_krediler",
+  "doc_type": "yonerge",
+  "status": "yururlukte",
+  "effective_date": "2025-07-01",
+  "confidentiality": "ic_kullanim",
+  "allowed_groups": [
+   "tum_personel"
+  ],
+  "source": "ic",
+  "file": "krd-yon-v3.pdf"
+ },
+ {
+  "doc_id": "krd-yon-v2",
+  "title": "Bireysel Kredi Yönergesi",
+  "version": "2",
+  "department": "bireysel_krediler",
+  "doc_type": "yonerge",
+  "status": "yururlukten_kalkti",
+  "effective_date": "2023-01-01",
+  "confidentiality": "ic_kullanim",
+  "allowed_groups": [
+   "tum_personel"
+  ],
+  "source": "ic",
+  "file": "krd-yon-v2.pdf"
+ },
+ {
+  "doc_id": "kart-pro",
+  "title": "Kredi Kartı İşlemleri Prosedürü",
+  "version": "5",
+  "department": "kartlar",
+  "doc_type": "prosedur",
+  "status": "yururlukte",
+  "effective_date": "2026-01-15",
+  "confidentiality": "ic_kullanim",
+  "allowed_groups": [
+   "tum_personel"
+  ],
+  "source": "ic",
+  "file": "kart-pro.pdf"
+ },
+ {
+  "doc_id": "eft-yon",
+  "title": "Para Transferi Yönergesi",
+  "version": "4",
+  "department": "operasyon",
+  "doc_type": "yonerge",
+  "status": "yururlukte",
+  "effective_date": "2025-11-01",
+  "confidentiality": "ic_kullanim",
+  "allowed_groups": [
+   "tum_personel"
+  ],
+  "source": "ic",
+  "file": "eft-yon.pdf"
+ },
+ {
+  "doc_id": "mev-hes",
+  "title": "Mevduat ve Hesap İşlemleri Yönergesi",
+  "version": "2",
+  "department": "bireysel_bankacilik",
+  "doc_type": "yonerge",
+  "status": "yururlukte",
+  "effective_date": "2025-03-01",
+  "confidentiality": "ic_kullanim",
+  "allowed_groups": [
+   "tum_personel"
+  ],
+  "source": "ic",
+  "file": "mev-hes.pdf"
+ },
+ {
+  "doc_id": "tic-teminat",
+  "title": "Ticari Kredi Teminat Yönergesi",
+  "version": "6",
+  "department": "ticari_krediler",
+  "doc_type": "yonerge",
+  "status": "yururlukte",
+  "effective_date": "2026-02-01",
+  "confidentiality": "gizli",
+  "allowed_groups": [
+   "kredi_tahsis",
+   "ust_yonetim"
+  ],
+  "source": "ic",
+  "file": "tic-teminat.pdf"
+ },
+ {
+  "doc_id": "bilgi-guv",
+  "title": "Bilgi Güvenliği Politikası",
+  "version": "7",
+  "department": "bilgi_teknolojileri",
+  "doc_type": "politika",
+  "status": "yururlukte",
+  "effective_date": "2026-04-01",
+  "confidentiality": "ic_kullanim",
+  "allowed_groups": [
+   "tum_personel"
+  ],
+  "source": "ic",
+  "file": "bilgi-guv.pdf"
+ },
+ {
+  "doc_id": "ik-izin",
+  "title": "İnsan Kaynakları İzin Yönetmeliği",
+  "version": "3",
+  "department": "insan_kaynaklari",
+  "doc_type": "yonetmelik",
+  "status": "yururlukte",
+  "effective_date": "2025-01-01",
+  "confidentiality": "ic_kullanim",
+  "allowed_groups": [
+   "tum_personel"
+  ],
+  "source": "ic",
+  "file": "ik-izin.pdf"
+ },
+ {
+  "doc_id": "tedarikci-pro",
+  "title": "Tedarikçi Risk Değerlendirme Prosedürü",
+  "version": "2",
+  "department": "satin_alma",
+  "doc_type": "prosedur",
+  "status": "yururlukte",
+  "effective_date": "2025-09-01",
+  "confidentiality": "ic_kullanim",
+  "allowed_groups": [
+   "tum_personel"
+  ],
+  "source": "ic",
+  "file": "tedarikci-pro.pdf"
+ },
+ {
+  "doc_id": "yk-karar-2026-14",
+  "title": "Yönetim Kurulu Kararı 2026/14",
+  "version": "1",
+  "department": "yonetim_kurulu",
+  "doc_type": "karar",
+  "status": "yururlukte",
+  "effective_date": "2026-06-20",
+  "confidentiality": "cok_gizli",
+  "allowed_groups": [
+   "ust_yonetim"
+  ],
+  "source": "ic",
+  "gun3": true,
+  "file": "yk-karar-2026-14.pdf"
+ },
+ {
+  "doc_id": "nova-teklif",
+  "title": "Veri Merkezi Hizmetleri Teklifi – Nova Bilişim A.Ş.",
+  "version": "1",
+  "department": "satin_alma",
+  "doc_type": "dis_teklif",
+  "status": "yururlukte",
+  "effective_date": "2026-08-10",
+  "confidentiality": "ic_kullanim",
+  "allowed_groups": [
+   "tum_personel"
+  ],
+  "source": "dis",
+  "gun3": true,
+  "file": "nova-teklif.pdf"
+ },
+ {
+  "doc_id": "sikayet-2026-0912",
+  "title": "Müşteri Şikâyet Kaydı 2026-0912",
+  "version": "1",
+  "department": "musteri_hizmetleri",
+  "doc_type": "sikayet_kaydi",
+  "status": "yururlukte",
+  "effective_date": "2026-09-12",
+  "confidentiality": "kisisel_veri",
+  "allowed_groups": [
+   "musteri_hizmetleri"
+  ],
+  "source": "ic",
+  "gun3": true,
+  "file": "sikayet-2026-0912.pdf"
+ }
+]
