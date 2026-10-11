@@ -1,0 +1,1180 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RAG Eğitimi · 1. Gün</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root{--bg:#0B1522;--ctl:#13233A;--ctl-fg:#F6F5F1;--accent:#E07B3F}
+html,body{margin:0;height:100%;background:var(--bg);overflow:hidden}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+#deck{position:relative;width:1920px;height:1080px;transform-origin:center center;flex:none}
+#deck *{margin:0;box-sizing:border-box}
+#deck ul,#deck ol{padding-left:1.2em}
+.slide{position:absolute!important;inset:0;width:1920px;height:1080px;overflow:hidden;box-sizing:border-box;opacity:0;visibility:hidden;transition:opacity .35s ease,visibility .35s}
+.slide.active{opacity:1;visibility:visible}
+#nav{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:rgba(19,35,58,.88);color:var(--ctl-fg);font:500 14px/1 'IBM Plex Sans',Arial,sans-serif;padding:8px 10px;border-radius:999px;box-shadow:0 4px 18px rgba(0,0,0,.35);transition:opacity .4s;z-index:10}
+#nav button{all:unset;cursor:pointer;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:var(--ctl-fg)}
+#nav button:hover{background:rgba(255,255,255,.12)}
+#nav button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#nav button:disabled{opacity:.3;cursor:default;background:none}
+#count{min-width:70px;text-align:center;font-variant-numeric:tabular-nums}
+#bar{position:fixed;left:0;top:0;height:4px;background:var(--accent);transition:width .3s;z-index:10}
+body.idle #nav{opacity:0} body.idle{cursor:none}
+</style></head><body>
+<div id="bar"></div>
+<div id="stage"><div id="deck">
+<section class="slide" id="d1-cover" data-transition="fade" style="background:#13233A;color:#F6F5F1;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:space-between">
+<div style="position:absolute;left:0;top:0;width:24px;height:1080px;background:#E07B3F"></div>
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#F0A06A">Türkiye Bankalar Birliği · Online Eğitim · 1. Gün / 3</p>
+<div style="display:flex;flex-direction:column;gap:32px">
+<h1 style="font-size:96px;font-weight:600;line-height:1.08;color:#F6F5F1">RAG ile Kurumsal<br>Yapay Zeka Uygulamaları</h1>
+<p style="font-family:'Source Serif 4', Georgia, serif;font-style:italic;font-size:44px;line-height:1.3;color:#BFCAD6">1. Gün — Temeller: dil modelleri, embedding'ler ve doküman içe aktarma</p>
+</div>
+<div style="display:flex;gap:64px;align-items:end">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-size:30px;font-weight:600;color:#F6F5F1">Dr. Ertürk Erdağı</p>
+<p style="font-size:24px;color:#BFCAD6">14 Ekim 2026</p>
+</div>
+</div>
+</section>
+<section class="slide" id="d1-egitmen" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:44px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">Eğitmen</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Dr. Ertürk Erdağı</h2>
+</div>
+<div style="display:flex;gap:32px;flex:1">
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#13233A;border-radius:16px;padding:40px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;color:#F0A06A">EĞİTİM · 2005–2023</p>
+<div style="display:flex;flex-direction:column;gap:36px">
+<div style="display:flex;flex-direction:column;gap:4px"><h3 style="font-size:34px;font-weight:600;color:#F6F5F1">Doktora</h3><p style="font-size:27px;line-height:1.45;color:#BFCAD6">Maltepe Üniversitesi<br>Bilgisayar Mühendisliği</p></div>
+<div style="display:flex;flex-direction:column;gap:4px"><h3 style="font-size:34px;font-weight:600;color:#F6F5F1">Yüksek Lisans</h3><p style="font-size:27px;line-height:1.45;color:#BFCAD6">İTÜ<br>Bilgi Güvenliği ve Kriptografi</p></div>
+<div style="display:flex;flex-direction:column;gap:4px"><h3 style="font-size:34px;font-weight:600;color:#F6F5F1">Lisans</h3><p style="font-size:27px;line-height:1.45;color:#BFCAD6">Marmara Üniversitesi<br>Bilgisayar ve Öğretim Teknolojileri</p></div>
+</div>
+</div>
+<div style="flex:1.75;display:flex;flex-direction:column;gap:20px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:40px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;color:#B4521C">DENEYİM · 2006–</p>
+<ul style="font-size:27px;line-height:1.62;color:#3B4859">
+<li><b style="color:#13233A">Sharpware</b> — Danışman ve Eğitmen</li>
+<li>İstanbul Medeniyet Üniversitesi — Dr. Öğretim Üyesi</li>
+<li>Gedik Üniversitesi — Dr. Öğretim Üyesi</li>
+<li>Nişantaşı Üniversitesi — Öğretim Görevlisi</li>
+<li>Topkapı Üniversitesi — Öğretim Görevlisi</li>
+<li>TÜBİTAK, İstanbul Kalkınma Ajansı, İSO — Proje Danışmanı ve Eğitmen</li>
+<li>Microsoft Partner Arı Bilgi — Yazılım ve Yapay Zeka Eğitmenliği</li>
+<li>Milli Eğitim Bakanlığı — Kurum Yöneticiliği ve AR-GE Yöneticisi</li>
+<li>Element Eğitim Teknolojileri — Eğitim Teknoloğu, Yazılım Geliştirme Uzmanı</li>
+<li>BilgiKurdu — Kurumsal Eğitim Teknoloğu</li>
+</ul>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">2 / 49</p>
+</section>
+<section class="slide" id="d1-harita" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">Üç günün haritası</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Dokümandan güvenli bir asistana, üç adımda</h2>
+</div>
+<div style="display:flex;gap:32px;flex:1">
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#13233A;border-radius:16px;padding:40px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;color:#F0A06A">1. GÜN · BUGÜN</p>
+<h3 style="font-size:40px;font-weight:600;line-height:1.15;color:#F6F5F1">Temeller</h3>
+<ul style="font-size:28px;line-height:1.5;color:#BFCAD6">
+<li>LLM'ler nasıl çalışır, RAG neden var</li>
+<li>Embedding ve vektör veritabanları</li>
+<li>Doküman içe aktarma</li>
+</ul>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:40px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;color:#B4521C">2. GÜN</p>
+<h3 style="font-size:40px;font-weight:600;line-height:1.15;color:#13233A">Servis ve kalite</h3>
+<ul style="font-size:28px;line-height:1.5">
+<li>Çalışan bir RAG servisi</li>
+<li>Retrieval stratejileri</li>
+<li>RAG değerlendirme</li>
+</ul>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:40px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;color:#B4521C">3. GÜN</p>
+<h3 style="font-size:40px;font-weight:600;line-height:1.15;color:#13233A">Güvenlik ve atölye</h3>
+<ul style="font-size:28px;line-height:1.5">
+<li>Güvenlik ve iyi mimari</li>
+<li>Agentic RAG, bankacılık senaryoları</li>
+<li>Takımlarla uçtan uca atölye</li>
+</ul>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">3 / 49</p>
+</section>
+<section class="slide" id="d1-akis" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">Bugünün akışı</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Teoriyle başlıyor, ekranda çalışan bir aramayla bitiyoruz</h2>
+</div>
+<table style="font-size:28px;color:#3B4859">
+<tr style="background:#13233A"><th style="width:64%;color:#F6F5F1">Blok</th><th style="width:36%;color:#F6F5F1">Biçim</th></tr>
+<tr style="background:#FDFCFA"><td>Açılış ve Erdağı Bank senaryosu</td><td>Tanışma</td></tr>
+<tr style="background:#EFEDE6"><td>M1 · LLM ve RAG'e giriş</td><td>Anlatım + oylama</td></tr>
+<tr style="background:#FDFCFA"><td>M2 · Embedding ve vektör veritabanları</td><td>Anlatım + Canlı demo 1.1</td></tr>
+<tr style="background:#EFEDE6"><td>M3 · Doküman içe aktarma</td><td>Anlatım + Canlı demo 1.2</td></tr>
+<tr style="background:#FDFCFA"><td>Uygulama 1 · Erdağı Bank'ı indeksle ve ara</td><td>Eğitmen ekranında</td></tr>
+<tr style="background:#EFEDE6"><td>Kapanış</td><td></td></tr>
+</table>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">4 / 49</p>
+</section>
+<section class="slide" id="d1-kazanim" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">Eğitimin kazanımları</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Üç gün sonunda bileceğiz, anlayacağız, yapacağız</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FDFCFA;border:1px solid #D9D6CC;border-top:8px solid #2F6690;border-radius:16px;padding:40px">
+<h3 style="font-size:40px;font-weight:600;color:#13233A">Bilir</h3>
+<p style="font-size:28px;line-height:1.45">RAG'in bileşenlerini, retrieval stratejilerini ve değerlendirme metriklerini</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FDFCFA;border:1px solid #D9D6CC;border-top:8px solid #2F6690;border-radius:16px;padding:40px">
+<h3 style="font-size:40px;font-weight:600;color:#13233A">Anlar</h3>
+<p style="font-size:28px;line-height:1.45">Modeli yeniden eğitmeden kurumsal bilgiyi bağlamayı, ölçmenin neden şart olduğunu, verinin kurum içinde nasıl kaldığını</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FDFCFA;border:1px solid #D9D6CC;border-top:8px solid #E07B3F;border-radius:16px;padding:40px">
+<h3 style="font-size:40px;font-weight:600;color:#13233A">Yapar</h3>
+<p style="font-size:28px;line-height:1.45">Uçtan uca bir RAG kurar, kalitesini ölçüp iyileştirir, kurumuna uygun bir PoC tasarlar</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">5 / 49</p>
+</section>
+<section class="slide" id="d1-senaryo" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">Üç gün boyunca kullanacağımız senaryo</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Erdağı Bank: kurgusal bir banka, gerçek problemler</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:36px">
+<h3 style="font-size:36px;font-weight:600;color:#13233A">İç dokümanlar</h3>
+<ul style="font-size:26px;line-height:1.5">
+<li>Bireysel kredi yönergesi (eski ve yeni sürüm)</li>
+<li>Kart, para transferi, mevduat</li>
+<li>Gizli ticari kredi teminat yönergesi</li>
+<li>Bilgi güvenliği, İK izinleri</li>
+<li>3. gün: kurul kararı, tedarikçi teklifi, şikayet kaydı</li>
+</ul>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:36px">
+<h3 style="font-size:36px;font-weight:600;color:#13233A">Kullanıcılar</h3>
+<ul style="font-size:26px;line-height:1.5">
+<li><b>Elif</b> · şube çalışanı</li>
+<li><b>Murat</b> · kredi tahsis uzmanı</li>
+<li><b>Can</b> · genel müdür yardımcısı</li>
+</ul>
+<p style="font-size:26px;line-height:1.45">Her biri farklı dokümanları görmeye yetkili.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:36px">
+<h3 style="font-size:36px;font-weight:600;color:#13233A">Gerçek mevzuat</h3>
+<ul style="font-size:26px;line-height:1.5">
+<li>6698 sayılı KVKK</li>
+<li>5411 sayılı Bankacılık Kanunu</li>
+</ul>
+<p style="font-size:26px;line-height:1.45">Kamuya açık; 3. gün atölyesinin verisi.</p>
+</div>
+</div>
+<p style="font-size:26px;color:#5E6878">Erdağı Bank, dokümanları, kişileri ve tutarları tamamen kurgusaldır.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">6 / 49</p>
+</section>
+<section class="slide" id="d1-soru-asistan" data-transition="fade" style="background:#E8E6DF;color:#13233A;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center;gap:48px">
+<p style="font-size:28px;font-weight:600;letter-spacing:3px;color:#FDFCFA;background:#2F6690;padding:12px 28px;border-radius:999px;align-self:start">SİZE SORU</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:72px;font-weight:400;line-height:1.2;color:#13233A">Genel bir yapay zeka asistanına bankanızın kart aidatı kuralını sorsanız ne olur?</h2>
+<p style="font-size:30px;line-height:1.45;color:#3B4859">Üç olası cevap: bilmez · eski bilgi verir · makul görünen bir şey uydurur.</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">7 / 49</p>
+</section>
+<section class="slide" id="m1-bolum" data-transition="push" style="background:#13233A;color:#F6F5F1;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center;gap:32px">
+<div style="position:absolute;left:0;top:0;width:24px;height:1080px;background:#E07B3F"></div>
+<p style="font-size:28px;font-weight:600;letter-spacing:3px;color:#F0A06A">MODÜL 1</p>
+<h1 style="font-size:112px;font-weight:600;line-height:1.05;color:#F6F5F1">LLM ve RAG'e Giriş</h1>
+<p style="font-family:'Source Serif 4', Georgia, serif;font-style:italic;font-size:44px;line-height:1.3;color:#BFCAD6">Dil modeli neyi iyi yapar, neyi yapamaz ve RAG bu boşluğu nasıl doldurur?</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#BFCAD6">8 / 49</p>
+</section>
+<section class="slide" id="m1-llm-nedir" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M1 · Büyük dil modeli nedir?</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">LLM, metnin devamında gelecek parçayı tahmin eden bir makinedir</h2>
+</div>
+<div style="display:flex;gap:64px;align-items:center">
+<div style="flex:1;display:flex;flex-direction:column;gap:24px">
+<p style="font-size:30px;line-height:1.45">Girdi:</p>
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:40px;line-height:1.3;color:#13233A">“Kredi kartı borcunu zamanında ödemeyen müşteriye …”</p>
+<p style="font-size:28px;line-height:1.45">Model her olası devam için bir olasılık hesaplar, birini seçer, metne ekler ve tekrar eder. Bütün yetenekleri bu tek işlemin çok büyük ölçekte yapılmasından doğar.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:40px">
+<p style="font-size:24px;font-weight:600;color:#5E6878">Sıradaki kelime için olasılıklar (temsili)</p>
+<div style="display:flex;align-items:center;gap:16px"><p style="width:180px;font-size:28px">gecikme</p><div style="width:420px;height:36px;background:#2F6690;border-radius:6px"></div><p style="font-size:28px">%62</p></div>
+<div style="display:flex;align-items:center;gap:16px"><p style="width:180px;font-size:28px">ihtar</p><div style="width:142px;height:36px;background:#2F6690;border-radius:6px"></div><p style="font-size:28px">%21</p></div>
+<div style="display:flex;align-items:center;gap:16px"><p style="width:180px;font-size:28px">faiz</p><div style="width:82px;height:36px;background:#2F6690;border-radius:6px"></div><p style="font-size:28px">%12</p></div>
+<div style="display:flex;align-items:center;gap:16px"><p style="width:180px;font-size:28px">çiçek</p><div style="width:4px;height:36px;background:#2F6690;border-radius:2px"></div><p style="font-size:28px">≈ %0</p></div>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">9 / 49</p>
+</section>
+<section class="slide" id="m1-token" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M1 · Token</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Model kelimeleri değil, token denen parçaları okur</h2>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:36px">
+<p style="font-size:26px;color:#5E6878">Aynı cümle, iki dil (temsili bölünme)</p>
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<p style="font-family:'IBM Plex Mono', monospace;font-size:28px;background:#DCE6EF;padding:6px 14px;border-radius:8px;color:#13233A">The</p>
+<p style="font-family:'IBM Plex Mono', monospace;font-size:28px;background:#DCE6EF;padding:6px 14px;border-radius:8px;color:#13233A">bank</p>
+<p style="font-family:'IBM Plex Mono', monospace;font-size:28px;background:#DCE6EF;padding:6px 14px;border-radius:8px;color:#13233A">raised</p>
+<p style="font-family:'IBM Plex Mono', monospace;font-size:28px;background:#DCE6EF;padding:6px 14px;border-radius:8px;color:#13233A">loan</p>
+<p style="font-family:'IBM Plex Mono', monospace;font-size:28px;background:#DCE6EF;padding:6px 14px;border-radius:8px;color:#13233A">rates</p>
+<p style="font-size:28px;padding:6px 14px;color:#5E6878">→ 5 token</p>
+</div>
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<p style="font-family:'IBM Plex Mono', monospace;font-size:28px;background:#F6DCCB;padding:6px 14px;border-radius:8px;color:#13233A">Banka</p>
+<p style="font-family:'IBM Plex Mono', monospace;font-size:28px;background:#F6DCCB;padding:6px 14px;border-radius:8px;color:#13233A">kredi</p>
+<p style="font-family:'IBM Plex Mono', monospace;font-size:28px;background:#F6DCCB;padding:6px 14px;border-radius:8px;color:#13233A">faiz</p>
+<p style="font-family:'IBM Plex Mono', monospace;font-size:28px;background:#F6DCCB;padding:6px 14px;border-radius:8px;color:#13233A">ler</p>
+<p style="font-family:'IBM Plex Mono', monospace;font-size:28px;background:#F6DCCB;padding:6px 14px;border-radius:8px;color:#13233A">ini</p>
+<p style="font-family:'IBM Plex Mono', monospace;font-size:28px;background:#F6DCCB;padding:6px 14px;border-radius:8px;color:#13233A">art</p>
+<p style="font-family:'IBM Plex Mono', monospace;font-size:28px;background:#F6DCCB;padding:6px 14px;border-radius:8px;color:#13233A">ır</p>
+<p style="font-family:'IBM Plex Mono', monospace;font-size:28px;background:#F6DCCB;padding:6px 14px;border-radius:8px;color:#13233A">dı</p>
+<p style="font-size:28px;padding:6px 14px;color:#5E6878">→ 8 token</p>
+</div>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:8px"><h3 style="font-size:32px;font-weight:600;color:#13233A">Maliyet</h3><p style="font-size:26px;line-height:1.45">Ücret token başına ödenir.</p></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px"><h3 style="font-size:32px;font-weight:600;color:#13233A">Kapasite</h3><p style="font-size:26px;line-height:1.45">Modelin bir anda görebileceği metin token ile ölçülür.</p></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px"><h3 style="font-size:32px;font-weight:600;color:#13233A">Türkçe</h3><p style="font-size:26px;line-height:1.45">Eklemeli yapı nedeniyle aynı içerik genelde daha çok token tutar.</p></div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">10 / 49</p>
+</section>
+<section class="slide" id="m1-dongu" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M1 · Metin üretim döngüsü</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Cevap tek seferde değil, token token yazılır</h2>
+</div>
+<div style="display:flex;align-items:center;gap:0">
+<div style="flex:1;display:flex;flex-direction:column;gap:10px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:28px">
+<p style="font-size:24px;font-weight:600;color:#B4521C">1</p><h3 style="font-size:30px;font-weight:600;color:#13233A">Token'lara böl</h3><p style="font-size:24px;line-height:1.4">Metin parçalanır</p>
+</div>
+<svg style="width:40px;height:24px;flex:none;align-self:center" viewBox="0 0 40 24" aria-hidden="true"><line x1="2" y1="12" x2="32" y2="12" stroke="#5E6878" stroke-width="3"/><polygon points="40,12 28,5 28,19" fill="#5E6878"/></svg>
+<div style="flex:1;display:flex;flex-direction:column;gap:10px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:28px">
+<p style="font-size:24px;font-weight:600;color:#B4521C">2</p><h3 style="font-size:30px;font-weight:600;color:#13233A">Vektöre çevir</h3><p style="font-size:24px;line-height:1.4">Her token sayılara dönüşür</p>
+</div>
+<svg style="width:40px;height:24px;flex:none;align-self:center" viewBox="0 0 40 24" aria-hidden="true"><line x1="2" y1="12" x2="32" y2="12" stroke="#5E6878" stroke-width="3"/><polygon points="40,12 28,5 28,19" fill="#5E6878"/></svg>
+<div style="flex:1;display:flex;flex-direction:column;gap:10px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:28px">
+<p style="font-size:24px;font-weight:600;color:#B4521C">3</p><h3 style="font-size:30px;font-weight:600;color:#13233A">Attention</h3><p style="font-size:24px;line-height:1.4">Token'lar birbirine bakar</p>
+</div>
+<svg style="width:40px;height:24px;flex:none;align-self:center" viewBox="0 0 40 24" aria-hidden="true"><line x1="2" y1="12" x2="32" y2="12" stroke="#5E6878" stroke-width="3"/><polygon points="40,12 28,5 28,19" fill="#5E6878"/></svg>
+<div style="flex:1;display:flex;flex-direction:column;gap:10px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:28px">
+<p style="font-size:24px;font-weight:600;color:#B4521C">4</p><h3 style="font-size:30px;font-weight:600;color:#13233A">Olasılık</h3><p style="font-size:24px;line-height:1.4">Her aday token puanlanır</p>
+</div>
+<svg style="width:40px;height:24px;flex:none;align-self:center" viewBox="0 0 40 24" aria-hidden="true"><line x1="2" y1="12" x2="32" y2="12" stroke="#5E6878" stroke-width="3"/><polygon points="40,12 28,5 28,19" fill="#5E6878"/></svg>
+<div style="flex:1;display:flex;flex-direction:column;gap:10px;background:#13233A;border-radius:16px;padding:28px">
+<p style="font-size:24px;font-weight:600;color:#F0A06A">5</p><h3 style="font-size:30px;font-weight:600;color:#F6F5F1">Seç ve ekle</h3><p style="font-size:24px;line-height:1.4;color:#BFCAD6">Sonra 1. adıma dön</p>
+</div>
+</div>
+<p style="font-size:30px;line-height:1.45;max-width:1400px">Model, önüne konan metindeki ilişkileri çok iyi kurar. RAG tam olarak bu yeteneği kullanır: doğru metni önüne koyarsanız onu çok iyi okur.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">11 / 49</p>
+</section>
+<section class="slide" id="m1-attention" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M1 · Attention</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Bir kelimenin anlamını çevresindeki kelimeler belirler</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FDFCFA;border:1px solid #D9D6CC;border-left:8px solid #2F6690;border-radius:16px;padding:36px">
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:40px;line-height:1.3;color:#13233A">“Merkez <b>bankası</b> faiz oranını artırdı.”</p>
+<p style="font-size:26px;line-height:1.45">“faiz” ve “oran” kelimeleri anlamı finansa çeker.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FDFCFA;border:1px solid #D9D6CC;border-left:8px solid #E07B3F;border-radius:16px;padding:36px">
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:40px;line-height:1.3;color:#13233A">“Parktaki <b>bank</b> kırılmış.”</p>
+<p style="font-size:26px;line-height:1.45">“park” ve “kırılmış” anlamı oturağa çeker.</p>
+</div>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:8px"><h3 style="font-size:32px;font-weight:600;color:#13233A">Eski mimariler (RNN, LSTM)</h3><p style="font-size:26px;line-height:1.45">Metni sırayla okur; uzun metinde baştakini unutur.</p></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px"><h3 style="font-size:32px;font-weight:600;color:#13233A">Transformer</h3><p style="font-size:26px;line-height:1.45">Tüm token'ları aynı anda görür, aralarındaki ilişkiyi doğrudan kurar.</p></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px"><h3 style="font-size:32px;font-weight:600;color:#13233A">Q · K · V</h3><p style="font-size:26px;line-height:1.45">Query “ne arıyorum”, Key “bende ne var”, Value “sana vereceğim bilgi”.</p></div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">12 / 49</p>
+</section>
+<section class="slide" id="m1-temperature" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M1 · Sampling ve temperature</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Temperature, modelin ne kadar “yaratıcı” davranacağını ayarlar</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:36px">
+<p style="font-size:64px;font-weight:600;color:#2F6690">0 – 0,2</p>
+<h3 style="font-size:36px;font-weight:600;color:#13233A">Düşük</h3>
+<p style="font-size:28px;line-height:1.45">Hep en olası token seçilir. Tutarlı, tekrarlanabilir cevaplar.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:36px">
+<p style="font-size:64px;font-weight:600;color:#B4521C">1 ve üstü</p>
+<h3 style="font-size:36px;font-weight:600;color:#13233A">Yüksek</h3>
+<p style="font-size:28px;line-height:1.45">Daha az olası token'lar da seçilebilir. Çeşitli ama öngörülemez.</p>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:24px;background:#13233A;border-radius:16px;padding:32px 40px">
+<svg style="color:#F0A06A;width:48px;height:48px;flex:none" aria-hidden="true"
+  class="lucide lucide-lightbulb"
+  xmlns="http://www.w3.org/2000/svg"
+ 
+ 
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" />
+  <path d="M9 18h6" />
+  <path d="M10 22h4" />
+</svg>
+<p style="font-size:30px;line-height:1.4;color:#F6F5F1">Kurumsal bilgi sorularında amaç yaratıcılık değil, kaynağa sadakattir: RAG'de temperature düşük tutulur.</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">13 / 49</p>
+</section>
+<section class="slide" id="m1-baglam" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M1 · Bağlam penceresi</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">“Pencere artık çok büyük, her şeyi içine koyalım” neden olmaz?</h2>
+</div>
+<p style="font-size:30px;line-height:1.45;max-width:1500px">Bağlam penceresi, modelin tek çağrıda görebileceği toplam token sayısıdır: talimatlar, dokümanlar, soru ve cevap dahil. Bugün yüz binlerle milyonlar arasında.</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+<div style="display:flex;flex-direction:column;gap:8px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:28px"><h3 style="font-size:32px;font-weight:600;color:#13233A">Ölçek</h3><p style="font-size:26px;line-height:1.4">Bir bankanın arşivi her pencereden büyüktür.</p></div>
+<div style="display:flex;flex-direction:column;gap:8px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:28px"><h3 style="font-size:32px;font-weight:600;color:#13233A">Maliyet ve hız</h3><p style="font-size:26px;line-height:1.4">Her soruda yüz binlerce token göndermek pahalı ve yavaştır.</p></div>
+<div style="display:flex;flex-direction:column;gap:8px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:28px"><h3 style="font-size:32px;font-weight:600;color:#13233A">Ortada kaybolma</h3><p style="font-size:26px;line-height:1.4">Uzun metnin ortasındaki bilgi daha sık gözden kaçar.</p></div>
+<div style="display:flex;flex-direction:column;gap:8px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:28px"><h3 style="font-size:32px;font-weight:600;color:#13233A">Yetki</h3><p style="font-size:26px;line-height:1.4">Her şeyi koymak, kullanıcının görmemesi gerekeni de modele vermektir.</p></div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">14 / 49</p>
+</section>
+<section class="slide" id="m1-sinirlar" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M1 · LLM'lerin sınırları</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Beş sınır, RAG'in beş gerekçesi</h2>
+</div>
+<table style="font-size:26px;color:#3B4859">
+<tr style="background:#13233A"><th style="width:22%;color:#F6F5F1">Sınır</th><th style="width:40%;color:#F6F5F1">Bankacılıktan örnek</th><th style="width:38%;color:#F6F5F1">RAG nasıl yardım eder</th></tr>
+<tr style="background:#FDFCFA"><td><b>Halüsinasyon</b></td><td>Var olmayan bir yönetmelik maddesine atıf</td><td>Cevabı kaynağa bağlar, kaynağı gösterir</td></tr>
+<tr style="background:#EFEDE6"><td><b>Bilgi kesim tarihi</b></td><td>Geçen hafta değişen transfer limiti</td><td>Güncel dokümanı bulup önüne koyar</td></tr>
+<tr style="background:#FDFCFA"><td><b>Özel bilgi yok</b></td><td>İç kredi tahsis yönergesi</td><td>Kurumun kendi dokümanlarını kullanır</td></tr>
+<tr style="background:#EFEDE6"><td><b>Bağlam sınırı</b></td><td>40.000 sayfalık prosedür arşivi</td><td>Yalnızca ilgili birkaç parçayı seçer</td></tr>
+<tr style="background:#FDFCFA"><td><b>İzlenemezlik</b></td><td>Denetçi “bu bilgi nereden?” diye sorar</td><td>Hangi parçanın kullanıldığını kaydeder</td></tr>
+</table>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">15 / 49</p>
+</section>
+<section class="slide" id="m1-ifade" data-transition="fade" style="background:#E8E6DF;color:#13233A;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center;gap:40px">
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:88px;font-weight:400;line-height:1.2;color:#13233A">Model çok iyi okur.<br>Ama sizin dokümanlarınızı<br><i>hiç görmedi.</i></p>
+<p style="font-size:30px;line-height:1.45;color:#3B4859">RAG, soruyu cevaplamadan önce ilgili sayfaları bulup modelin önüne koyar.</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">16 / 49</p>
+</section>
+<section class="slide" id="m1-acik-kitap" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M1 · RAG nedir?</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">RAG, modeli kapalı kitap sınavından açık kitap sınavına geçirir</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:40px">
+<svg style="color:#5E6878;width:56px;height:56px;flex:none" aria-hidden="true"
+  class="lucide lucide-lock"
+  xmlns="http://www.w3.org/2000/svg"
+ 
+ 
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+</svg>
+<h3 style="font-size:40px;font-weight:600;color:#13233A">Saf LLM · kapalı kitap</h3>
+<p style="font-size:28px;line-height:1.45">Öğrenci yalnızca ezberinden yazar. Hatırlamadığı yeri akıcı ama yanlış cümlelerle doldurabilir.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FDFCFA;border:1px solid #D9D6CC;border-top:8px solid #E07B3F;border-radius:16px;padding:40px">
+<svg style="color:#B4521C;width:56px;height:56px;flex:none" aria-hidden="true"
+  class="lucide lucide-book"
+  xmlns="http://www.w3.org/2000/svg"
+ 
+ 
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20" />
+</svg>
+<h3 style="font-size:40px;font-weight:600;color:#13233A">RAG · açık kitap</h3>
+<p style="font-size:28px;line-height:1.45">Soruyla birlikte ilgili ders notları da verilir. İyi öğrenci cevabı oradan çıkarır ve “şu sayfada yazıyor” der.</p>
+</div>
+</div>
+<p style="font-size:30px;line-height:1.45"><b style="color:#13233A">Eğitimin ana fikri:</b> Kalite büyük ölçüde doğru sayfayı bulmaya bağlıdır. Yanlış sayfa verilen en iyi öğrenci bile yanlış yazar.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">17 / 49</p>
+</section>
+<section class="slide" id="m1-iki-akis" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M1 · RAG mimarisi</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Dokümanlar bir kez indekslenir, her soru o indekste aranır</h2>
+</div>
+<p style="position:absolute;left:128px;top:336px;width:1200px;font-size:24px;font-weight:600;letter-spacing:2px;color:#2F6690">1 · İNDEKSLEME — önceden, doküman değiştikçe</p>
+<div style="position:absolute;left:128px;top:384px;width:280px;height:110px;background:#FDFCFA;border:2px solid #2F6690;border-radius:14px;display:flex;flex-direction:column;justify-content:center;align-items:center"><p style="font-size:28px;font-weight:600;color:#13233A">Dokümanlar</p></div>
+<div style="position:absolute;left:474px;top:384px;width:280px;height:110px;background:#FDFCFA;border:2px solid #2F6690;border-radius:14px;display:flex;flex-direction:column;justify-content:center;align-items:center"><p style="font-size:28px;font-weight:600;color:#13233A">Parçala</p></div>
+<div style="position:absolute;left:820px;top:384px;width:280px;height:110px;background:#FDFCFA;border:2px solid #2F6690;border-radius:14px;display:flex;flex-direction:column;justify-content:center;align-items:center"><p style="font-size:28px;font-weight:600;color:#13233A">Vektöre çevir</p></div>
+<div style="position:absolute;left:1166px;top:384px;width:280px;height:110px;background:#2F6690;border-radius:14px;display:flex;flex-direction:column;justify-content:center;align-items:center"><p style="font-size:28px;font-weight:600;color:#FDFCFA">Vektör DB</p></div>
+<svg style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;overflow:visible" viewBox="0 0 1920 1080" aria-hidden="true"><line x1="408.0" y1="439.0" x2="465.6" y2="439.0" stroke="#5E6878" stroke-width="3"/><polygon points="474.0,439.0 460.0,431.3 460.0,446.7" fill="#5E6878"/></svg>
+<svg style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;overflow:visible" viewBox="0 0 1920 1080" aria-hidden="true"><line x1="754.0" y1="439.0" x2="811.6" y2="439.0" stroke="#5E6878" stroke-width="3"/><polygon points="820.0,439.0 806.0,431.3 806.0,446.7" fill="#5E6878"/></svg>
+<svg style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;overflow:visible" viewBox="0 0 1920 1080" aria-hidden="true"><line x1="1100.0" y1="439.0" x2="1157.6" y2="439.0" stroke="#5E6878" stroke-width="3"/><polygon points="1166.0,439.0 1152.0,431.3 1152.0,446.7" fill="#5E6878"/></svg>
+<p style="position:absolute;left:128px;top:600px;width:1200px;font-size:24px;font-weight:600;letter-spacing:2px;color:#B4521C">2 · SORGU — her soruda, saniyeler içinde</p>
+<div style="position:absolute;left:128px;top:648px;width:280px;height:110px;background:#FDFCFA;border:2px solid #E07B3F;border-radius:14px;display:flex;flex-direction:column;justify-content:center;align-items:center"><p style="font-size:28px;font-weight:600;color:#13233A">Soru</p></div>
+<div style="position:absolute;left:474px;top:648px;width:280px;height:110px;background:#FDFCFA;border:2px solid #E07B3F;border-radius:14px;display:flex;flex-direction:column;justify-content:center;align-items:center"><p style="font-size:28px;font-weight:600;color:#13233A">Vektöre çevir</p></div>
+<div style="position:absolute;left:820px;top:648px;width:280px;height:110px;background:#FDFCFA;border:2px solid #E07B3F;border-radius:14px;display:flex;flex-direction:column;justify-content:center;align-items:center"><p style="font-size:28px;font-weight:600;color:#13233A">Yetki filtresi</p></div>
+<div style="position:absolute;left:1166px;top:648px;width:280px;height:110px;background:#FDFCFA;border:2px solid #E07B3F;border-radius:14px;display:flex;flex-direction:column;justify-content:center;align-items:center"><p style="font-size:28px;font-weight:600;color:#13233A">Ara (top-k)</p></div>
+<div style="position:absolute;left:1512px;top:648px;width:280px;height:110px;background:#13233A;border-radius:14px;display:flex;flex-direction:column;justify-content:center;align-items:center"><p style="font-size:28px;font-weight:600;color:#F6F5F1">LLM → cevap</p><p style="font-size:24px;color:#BFCAD6">kaynaklarıyla</p></div>
+<svg style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;overflow:visible" viewBox="0 0 1920 1080" aria-hidden="true"><line x1="408.0" y1="703.0" x2="465.6" y2="703.0" stroke="#5E6878" stroke-width="3"/><polygon points="474.0,703.0 460.0,695.3 460.0,710.7" fill="#5E6878"/></svg>
+<svg style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;overflow:visible" viewBox="0 0 1920 1080" aria-hidden="true"><line x1="754.0" y1="703.0" x2="811.6" y2="703.0" stroke="#5E6878" stroke-width="3"/><polygon points="820.0,703.0 806.0,695.3 806.0,710.7" fill="#5E6878"/></svg>
+<svg style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;overflow:visible" viewBox="0 0 1920 1080" aria-hidden="true"><line x1="1100.0" y1="703.0" x2="1157.6" y2="703.0" stroke="#5E6878" stroke-width="3"/><polygon points="1166.0,703.0 1152.0,695.3 1152.0,710.7" fill="#5E6878"/></svg>
+<svg style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;overflow:visible" viewBox="0 0 1920 1080" aria-hidden="true"><line x1="1446.0" y1="703.0" x2="1503.6" y2="703.0" stroke="#5E6878" stroke-width="3"/><polygon points="1512.0,703.0 1498.0,695.3 1498.0,710.7" fill="#5E6878"/></svg>
+<svg style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;overflow:visible" viewBox="0 0 1920 1080" aria-hidden="true"><line x1="1306.0" y1="494.0" x2="1306.0" y2="639.6" stroke="#2F6690" stroke-width="3"/><polygon points="1306.0,648.0 1313.7,634.0 1298.3,634.0" fill="#2F6690"/></svg>
+<p style="position:absolute;left:1326px;top:548px;width:300px;font-size:24px;color:#2F6690">en benzer k parça</p>
+<p style="position:absolute;left:474px;top:774px;width:340px;font-size:24px;color:#5E6878">aynı embedding modeli</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">18 / 49</p>
+</section>
+<section class="slide" id="m1-ornek" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M1 · Uçtan uca bir örnek</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Bir soru, bir parça, kaynaklı bir cevap</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:24px">
+<div style="display:flex;flex-direction:column;gap:8px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:28px">
+<p style="font-size:24px;font-weight:600;color:#2F6690">BULUNAN PARÇA</p>
+<p style="font-size:26px;line-height:1.45">Bireysel Kredi Yönergesi, Madde 4.2: “100.000 TL üzerindeki ihtiyaç kredilerinde gelir belgesi zorunludur.”</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:28px">
+<p style="font-size:24px;font-weight:600;color:#B4521C">KULLANICININ SORUSU</p>
+<p style="font-size:26px;line-height:1.45">“150 bin liralık ihtiyaç kredisi için hangi belge gerekiyor?”</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;background:#13233A;border-radius:16px;padding:28px">
+<p style="font-size:24px;font-weight:600;color:#F0A06A">CEVAP</p>
+<p style="font-size:26px;line-height:1.45;color:#F6F5F1">“100.000 TL üzerindeki ihtiyaç kredilerinde gelir belgesi zorunludur [Kaynak 1].”</p>
+</div>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#E8E6DF;border-radius:16px;padding:32px">
+<p style="font-size:24px;font-weight:600;color:#3B4859">MODELE GİDEN PROMPT</p>
+<p style="font-family:'IBM Plex Mono', monospace;font-size:24px;line-height:1.5;color:#13233A">Sen Erdağı Bank'ın iç asistanısın. Yalnızca aşağıdaki kaynaklara dayanarak cevap ver. Kaynaklarda yoksa “bulamadım” de. Kaynağı [Kaynak N] olarak belirt.<br><br>[Kaynak 1] Bireysel Kredi Yönergesi, Madde 4.2: 100.000 TL üzerindeki ihtiyaç kredilerinde gelir belgesi zorunludur.<br><br>Soru: 150 bin liralık ihtiyaç kredisi için hangi belge gerekiyor?</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">19 / 49</p>
+</section>
+<section class="slide" id="m1-deger" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M1 · RAG'in kurumlara değeri</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Modeli yeniden eğitmeden kurumsal bilgiyi bağlamanın yolu</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:28px">
+<div style="display:flex;gap:24px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:32px"><svg style="color:#2F6690;width:56px;height:56px;flex:none" aria-hidden="true"
+  class="lucide lucide-clock"
+  xmlns="http://www.w3.org/2000/svg"
+ 
+ 
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <circle cx="12" cy="12" r="10" />
+  <path d="M12 6v6l4 2" />
+</svg><div style="flex:1;display:flex;flex-direction:column;gap:8px"><h3 style="font-size:34px;font-weight:600;color:#13233A">Güncellik</h3><p style="font-size:26px;line-height:1.4">Doküman değişince indeks güncellenir; model aynı kalır.</p></div></div>
+<div style="display:flex;gap:24px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:32px"><svg style="color:#2F6690;width:56px;height:56px;flex:none" aria-hidden="true"
+  class="lucide lucide-search"
+  xmlns="http://www.w3.org/2000/svg"
+ 
+ 
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="m21 21-4.34-4.34" />
+  <circle cx="11" cy="11" r="8" />
+</svg><div style="flex:1;display:flex;flex-direction:column;gap:8px"><h3 style="font-size:34px;font-weight:600;color:#13233A">İzlenebilirlik</h3><p style="font-size:26px;line-height:1.4">Cevap kaynağa bağlanır; denetçi kaynağı kontrol edebilir.</p></div></div>
+<div style="display:flex;gap:24px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:32px"><svg style="color:#2F6690;width:56px;height:56px;flex:none" aria-hidden="true"
+  class="lucide lucide-lock"
+  xmlns="http://www.w3.org/2000/svg"
+ 
+ 
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+</svg><div style="flex:1;display:flex;flex-direction:column;gap:8px"><h3 style="font-size:34px;font-weight:600;color:#13233A">Yetki kontrolü</h3><p style="font-size:26px;line-height:1.4">Herkes yalnızca görmeye yetkili olduğu dokümanlardan cevap alır.</p></div></div>
+<div style="display:flex;gap:24px;background:#FDFCFA;border:1px solid #D9D6CC;border-top:8px solid #E07B3F;border-radius:16px;padding:32px"><svg style="color:#B4521C;width:56px;height:56px;flex:none" aria-hidden="true"
+  class="lucide lucide-database"
+  xmlns="http://www.w3.org/2000/svg"
+ 
+ 
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <ellipse cx="12" cy="5" rx="9" ry="3" />
+  <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+  <path d="M3 12A9 3 0 0 0 21 12" />
+</svg><div style="flex:1;display:flex;flex-direction:column;gap:8px"><h3 style="font-size:34px;font-weight:600;color:#13233A">Veri egemenliği</h3><p style="font-size:26px;line-height:1.4">Tüm bileşenler kurum içinde çalışırsa hassas veri kurumdan hiç çıkmaz.</p></div></div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">20 / 49</p>
+</section>
+<section class="slide" id="m1-sinir-rag" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M1 · RAG sihirli değnek değil</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">RAG'in zorlandığı üç durum</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:36px">
+<h3 style="font-size:34px;font-weight:600;color:#13233A">Hesap ve toplama</h3>
+<p style="font-family:'Source Serif 4', Georgia, serif;font-style:italic;font-size:28px;line-height:1.4;color:#13233A">“Geçen yıl kaç kredi başvurusu reddedildi?”</p>
+<p style="font-size:26px;line-height:1.45">Cevap dokümanda değil veritabanında. SQL üreten bir araç veya raporlama gerekir.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:36px">
+<h3 style="font-size:34px;font-weight:600;color:#13233A">Koleksiyon geneli</h3>
+<p style="font-family:'Source Serif 4', Georgia, serif;font-style:italic;font-size:28px;line-height:1.4;color:#13233A">“Tüm yönergelerimizdeki ortak temalar neler?”</p>
+<p style="font-size:26px;line-height:1.45">Birkaç parça yetmez. Graph RAG gibi yaklaşımlar gerekir (3. gün).</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:36px">
+<h3 style="font-size:34px;font-weight:600;color:#13233A">Kötü kaynak</h3>
+<p style="font-family:'Source Serif 4', Georgia, serif;font-style:italic;font-size:28px;line-height:1.4;color:#13233A">Çelişkili, eski ya da okunaksız dokümanlar</p>
+<p style="font-size:26px;line-height:1.45">RAG bu sorunu düzeltmez, büyütür. Önce içerik yönetimi.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">21 / 49</p>
+</section>
+<section class="slide" id="m1-oylama" data-transition="fade" style="background:#E8E6DF;color:#13233A;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center;gap:48px">
+<p style="font-size:28px;font-weight:600;letter-spacing:3px;color:#FDFCFA;background:#2F6690;padding:12px 28px;border-radius:999px;align-self:start">OYLAMA</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:64px;font-weight:400;line-height:1.2;color:#13233A">Bankanızın tüm yönergelerini bir yapay zeka asistanına “öğretmek” için hangisini seçerdiniz?</h2>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;gap:20px;align-items:center;background:#FDFCFA;border-radius:16px;padding:32px"><p style="font-size:48px;font-weight:600;color:#2F6690">A</p><p style="font-size:30px;line-height:1.35">Modeli kendi verimizle yeniden eğitmek (fine-tuning)</p></div>
+<div style="flex:1;display:flex;gap:20px;align-items:center;background:#FDFCFA;border-radius:16px;padding:32px"><p style="font-size:48px;font-weight:600;color:#2F6690">B</p><p style="font-size:30px;line-height:1.35">Her soruda ilgili parçaları bulup vermek (RAG)</p></div>
+<div style="flex:1;display:flex;gap:20px;align-items:center;background:#FDFCFA;border-radius:16px;padding:32px"><p style="font-size:48px;font-weight:600;color:#2F6690">C</p><p style="font-size:30px;line-height:1.35">Tüm yönergeleri her seferinde prompt'a koymak</p></div>
+</div>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">22 / 49</p>
+</section>
+<section class="slide" id="m1-karar" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M1 · Fine-tuning, RAG, uzun bağlam</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Bilgi eklemek için varsayılan cevap RAG'dir</h2>
+</div>
+<table style="font-size:25px;color:#3B4859">
+<tr style="background:#13233A"><th style="width:28%;color:#F6F5F1">Kriter</th><th style="width:24%;color:#F6F5F1">Uzun bağlam</th><th style="width:24%;color:#F0A06A">RAG</th><th style="width:24%;color:#F6F5F1">Fine-tuning</th></tr>
+<tr style="background:#FDFCFA"><td>Bilgiyi güncellemek</td><td>Anında</td><td><b>Dakikalar</b></td><td>Günler, haftalar</td></tr>
+<tr style="background:#EFEDE6"><td>Kaynak göstermek</td><td>Kısmen</td><td><b>Güçlü</b></td><td>Yok</td></tr>
+<tr style="background:#FDFCFA"><td>Yetki bazlı erişim</td><td>Zor</td><td><b>Güçlü</b></td><td>Mümkün değil</td></tr>
+<tr style="background:#EFEDE6"><td>Doküman ölçeği</td><td>Yüzlerce sayfa</td><td><b>Milyonlarca sayfa</b></td><td>Bilgi için uygun değil</td></tr>
+<tr style="background:#FDFCFA"><td>Sorgu başı maliyet</td><td>Yüksek</td><td><b>Düşük – orta</b></td><td>Düşük (eğitimi pahalı)</td></tr>
+<tr style="background:#EFEDE6"><td>Üslup ve format öğretmek</td><td>Orta</td><td>Orta</td><td><b>Güçlü</b></td></tr>
+</table>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">23 / 49</p>
+</section>
+<section class="slide" id="m1-hangisi" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M1 · Hangi durumda hangisi?</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Çalışanı eğitime göndermek mi, masasına klasör koymak mı?</h2>
+</div>
+<div style="display:flex;gap:28px">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FDFCFA;border:1px solid #D9D6CC;border-top:8px solid #E07B3F;border-radius:16px;padding:32px">
+<h3 style="font-size:34px;font-weight:600;color:#13233A">RAG seçin</h3>
+<ul style="font-size:25px;line-height:1.5">
+<li>Cevap dokümanlara dayanmalı</li>
+<li>Bilgi sık değişiyor</li>
+<li>Kaynak ve denetim gerekli</li>
+<li>Kişiye göre yetki var</li>
+</ul>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FDFCFA;border:1px solid #D9D6CC;border-top:8px solid #2F6690;border-radius:16px;padding:32px">
+<h3 style="font-size:34px;font-weight:600;color:#13233A">Fine-tuning düşünün</h3>
+<ul style="font-size:25px;line-height:1.5">
+<li>Sabit bir çıktı formatı</li>
+<li>Kurumsal üslup ve terim</li>
+<li>Dar görevde küçük model</li>
+<li>Embedding'i alana uyarlamak</li>
+</ul>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FDFCFA;border:1px solid #D9D6CC;border-top:8px solid #5E6878;border-radius:16px;padding:32px">
+<h3 style="font-size:34px;font-weight:600;color:#13233A">Uzun bağlam düşünün</h3>
+<ul style="font-size:25px;line-height:1.5">
+<li>Az ve sabit doküman</li>
+<li>Düşük sorgu sayısı</li>
+<li>Tek belgede derin analiz</li>
+</ul>
+</div>
+</div>
+<p style="font-size:28px;line-height:1.45">Bunlar rakip değil: olgun sistemlerde RAG bilgiyi sağlar, ince ayarlı bir model onu kurumun istediği biçimde yazar.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">24 / 49</p>
+</section>
+<section class="slide" id="m2-bolum" data-transition="push" style="background:#13233A;color:#F6F5F1;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center;gap:32px">
+<div style="position:absolute;left:0;top:0;width:24px;height:1080px;background:#E07B3F"></div>
+<p style="font-size:28px;font-weight:600;letter-spacing:3px;color:#F0A06A">MODÜL 2</p>
+<h1 style="font-size:112px;font-weight:600;line-height:1.05;color:#F6F5F1">Vektörler, Embedding'ler ve Vektör Veritabanları</h1>
+<p style="font-family:'Source Serif 4', Georgia, serif;font-style:italic;font-size:44px;line-height:1.3;color:#BFCAD6">Anlamı sayıya çevirmek ve milyonlarca sayı arasından en yakınını bulmak</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#BFCAD6">25 / 49</p>
+</section>
+<section class="slide" id="m2-harita" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M2 · Embedding nedir?</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Embedding, anlamı bir haritadaki konuma çevirir</h2>
+</div>
+<div style="display:flex;gap:64px;align-items:start">
+<div style="flex:1;display:flex;flex-direction:column;gap:24px">
+<p style="font-size:30px;line-height:1.45">Şehirleri iki sayıyla (enlem, boylam) haritaya koyarız; yakın şehirler haritada da yakındır.</p>
+<p style="font-size:30px;line-height:1.45">Embedding modeli aynısını anlam için yapar: her metne yüzlerce boyutlu bir konum verir.</p>
+<p style="font-size:30px;line-height:1.45"><b style="color:#13233A">Sonuç:</b> Ortak kelimesi olmayan iki cümle, anlamları yakınsa yan yana düşer.</p>
+<p style="font-size:24px;line-height:1.4;color:#5E6878">Bu iki eksen oyuncak bir örnektir. Gerçek modellerde eksenleri model öğrenir ve anlamları insan için belirsizdir.</p>
+</div>
+<div style="position:relative;width:800px;height:540px;border-left:3px solid #5E6878;border-bottom:3px solid #5E6878">
+<div style="position:absolute;left:640px;top:418px;width:28px;height:28px;background:#2F6690;border-radius:50%"></div>
+<div style="position:absolute;left:604px;top:376px;width:28px;height:28px;background:#2F6690;border-radius:50%"></div>
+<div style="position:absolute;left:236px;top:80px;width:28px;height:28px;background:#E07B3F;border-radius:50%"></div>
+<div style="position:absolute;left:60px;top:470px;width:28px;height:28px;background:#5E6878;border-radius:50%"></div>
+<p style="position:absolute;left:380px;top:448px;width:400px;font-size:24px;text-align:right;color:#13233A">“Kredi faizi yükseldi”</p>
+<p style="position:absolute;left:300px;top:330px;width:420px;font-size:24px;text-align:right;color:#13233A">“Mevduat getirisi arttı”</p>
+<p style="position:absolute;left:280px;top:78px;width:460px;font-size:24px;color:#13233A">“Mobil uygulama şifremi unuttum”</p>
+<p style="position:absolute;left:104px;top:430px;width:300px;font-size:24px;color:#13233A">“Maç berabere bitti”</p>
+<p style="position:absolute;left:480px;top:552px;width:320px;font-size:24px;text-align:right;color:#5E6878">finansallık →</p>
+<p style="position:absolute;left:24px;top:0px;width:340px;font-size:24px;color:#5E6878">↑ teknolojiklik</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">26 / 49</p>
+</section>
+<section class="slide" id="m2-boyut" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M2 · Boyut ve depolama</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Boyut büyüdükçe ayrıntı artar, maliyet de</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:40px">
+<p style="font-size:96px;font-weight:600;line-height:1;color:#2F6690">1024</p>
+<p style="font-size:28px;line-height:1.45">Bir vektördeki sayı adedi (boyut). Yaygın değerler 384, 768, 1024, 1536, 3072.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:40px">
+<p style="font-size:96px;font-weight:600;line-height:1;color:#2F6690">≈ 4 GB</p>
+<p style="font-size:28px;line-height:1.45">1 milyon parça × 1024 boyut × 4 bayt. Yalnızca vektörler; indeks ve metin ayrıca yer tutar.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#13233A;border-radius:16px;padding:40px">
+<p style="font-size:96px;font-weight:600;line-height:1;color:#F0A06A">≠</p>
+<p style="font-size:28px;line-height:1.45;color:#F6F5F1">Boyut kaliteyi tek başına belirlemez. İyi eğitilmiş 1024 boyutlu bir model, vasat 3072 boyutlu modelden iyi olabilir.</p>
+</div>
+</div>
+<p style="font-size:28px;line-height:1.45"><b style="color:#13233A">Matryoshka embedding'ler:</b> En önemli bilgi ilk boyutlarda tutulur; vektörün yalnızca ilk 256 boyutuyla hızlı ön eleme yapılabilir.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">27 / 49</p>
+</section>
+<section class="slide" id="m2-benzerlik" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M2 · Benzerliği ölçmek</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Kosinüs benzerliği iki vektör arasındaki açıya bakar</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#13233A;border-radius:16px;padding:36px">
+<p style="font-family:'IBM Plex Mono', monospace;font-size:34px;color:#F6F5F1">cos(A, B) = A·B / (‖A‖ × ‖B‖)</p>
+<p style="font-size:26px;line-height:1.45;color:#BFCAD6">1 = aynı yön · 0 = ilgisiz · −1 = zıt yön</p>
+<p style="font-family:'IBM Plex Mono', monospace;font-size:24px;line-height:1.6;color:#E8E6DF">A = (0,9 ; 0,1) “Kredi faizi yükseldi”<br>B = (0,85 ; 0,1) “Mevduat getirisi arttı”<br>C = (0,3 ; 0,9) “Şifremi unuttum”</p>
+<p style="font-family:'IBM Plex Mono', monospace;font-size:28px;line-height:1.6;color:#F0A06A">cos(A, B) ≈ 0,999<br>cos(A, C) ≈ 0,42</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px">
+<table style="font-size:26px;color:#3B4859">
+<tr style="background:#13233A"><th style="width:30%;color:#F6F5F1">Metrik</th><th style="width:70%;color:#F6F5F1">Ne zaman</th></tr>
+<tr style="background:#FDFCFA"><td><b>Kosinüs</b></td><td>Uzunluktan bağımsız, en yaygın</td></tr>
+<tr style="background:#EFEDE6"><td><b>Nokta çarpımı</b></td><td>Vektörler normalize ise kosinüsle aynı, en hızlı</td></tr>
+<tr style="background:#FDFCFA"><td><b>Öklid</b></td><td>Düz mesafe; normalize vektörde aynı sıralama</td></tr>
+</table>
+<p style="font-size:28px;line-height:1.45"><b style="color:#13233A">Pratik kural:</b> Embedding modelinin dokümantasyonu hangi metriği öneriyorsa onu kullanın.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">28 / 49</p>
+</section>
+<section class="slide" id="m2-biencoder" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M2 · Neden bu kadar hızlı?</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Dokümanlar önceden, soru ise sorgu anında vektörleşir</h2>
+</div>
+<div style="display:flex;align-items:center">
+<div style="width:300px;display:flex;flex-direction:column;gap:6px;background:#FDFCFA;border:2px solid #2F6690;border-radius:14px;padding:24px"><p style="font-size:24px;font-weight:600;color:#2F6690">ÖNCEDEN, BİR KEZ</p><p style="font-size:28px;font-weight:600;color:#13233A">Milyonlarca parça</p></div>
+<svg style="width:72px;height:24px;flex:none;align-self:center" viewBox="0 0 72 24" aria-hidden="true"><line x1="2" y1="12" x2="64" y2="12" stroke="#5E6878" stroke-width="3"/><polygon points="72,12 60,5 60,19" fill="#5E6878"/></svg>
+<div style="width:300px;display:flex;flex-direction:column;justify-content:center;background:#2F6690;border-radius:14px;padding:24px;height:116px"><p style="font-size:28px;font-weight:600;color:#FDFCFA">Embedding modeli</p></div>
+<svg style="width:72px;height:24px;flex:none;align-self:center" viewBox="0 0 72 24" aria-hidden="true"><line x1="2" y1="12" x2="64" y2="12" stroke="#5E6878" stroke-width="3"/><polygon points="72,12 60,5 60,19" fill="#5E6878"/></svg>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;background:#FDFCFA;border:2px solid #2F6690;border-radius:14px;padding:24px;height:116px"><p style="font-size:28px;font-weight:600;color:#13233A">Vektör DB'de saklanır</p></div>
+</div>
+<div style="display:flex;align-items:center">
+<div style="width:300px;display:flex;flex-direction:column;gap:6px;background:#FDFCFA;border:2px solid #E07B3F;border-radius:14px;padding:24px"><p style="font-size:24px;font-weight:600;color:#B4521C">SORGU ANINDA</p><p style="font-size:28px;font-weight:600;color:#13233A">Tek bir soru</p></div>
+<svg style="width:72px;height:24px;flex:none;align-self:center" viewBox="0 0 72 24" aria-hidden="true"><line x1="2" y1="12" x2="64" y2="12" stroke="#5E6878" stroke-width="3"/><polygon points="72,12 60,5 60,19" fill="#5E6878"/></svg>
+<div style="width:300px;display:flex;flex-direction:column;justify-content:center;background:#2F6690;border-radius:14px;padding:24px;height:116px"><p style="font-size:28px;font-weight:600;color:#FDFCFA">Aynı model</p></div>
+<svg style="width:72px;height:24px;flex:none;align-self:center" viewBox="0 0 72 24" aria-hidden="true"><line x1="2" y1="12" x2="64" y2="12" stroke="#5E6878" stroke-width="3"/><polygon points="72,12 60,5 60,19" fill="#5E6878"/></svg>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;background:#13233A;border-radius:14px;padding:24px;height:116px"><p style="font-size:28px;font-weight:600;color:#F6F5F1">En yakın vektörlerle karşılaştır</p></div>
+</div>
+<p style="font-size:28px;line-height:1.45"><b style="color:#13233A">Bi-encoder</b> mantığı: soru ve doküman birbirini görmeden kodlanır. Bu hız sağlar ama ince eşleşmeler kaçabilir; açığı 2. gün <b style="color:#13233A">reranker</b> kapatacak.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">29 / 49</p>
+</section>
+<section class="slide" id="m2-model-secimi" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M2 · Embedding modeli seçimi</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Kararı sıralama tablosu değil, kendi soru setiniz verir</h2>
+</div>
+<table style="font-size:25px;color:#3B4859">
+<tr style="background:#13233A"><th style="width:34%;color:#F6F5F1">Model ailesi</th><th style="width:22%;color:#F6F5F1">Tür</th><th style="width:44%;color:#F6F5F1">Not</th></tr>
+<tr style="background:#FDFCFA"><td><b>BAAI bge-m3</b></td><td>Açık, çok dilli</td><td>Türkçe dahil; kurum içinde çalışır; demolarımızda bu</td></tr>
+<tr style="background:#EFEDE6"><td><b>multilingual-e5</b></td><td>Açık, çok dilli</td><td>“query:” / “passage:” öneki ister</td></tr>
+<tr style="background:#FDFCFA"><td><b>all-MiniLM-L6-v2</b></td><td>Açık, hafif</td><td>Çok hızlı ama ağırlıklı İngilizce</td></tr>
+<tr style="background:#EFEDE6"><td><b>Bulut API modelleri</b></td><td>OpenAI, Cohere vb.</td><td>Güçlü; ama veri kurum dışına çıkar</td></tr>
+</table>
+<div style="display:flex;gap:16px;flex-wrap:wrap">
+<p style="font-size:26px;background:#DCE6EF;color:#13233A;padding:10px 22px;border-radius:999px">1 · Türkçe performansı</p>
+<p style="font-size:26px;background:#DCE6EF;color:#13233A;padding:10px 22px;border-radius:999px">2 · Veri yerleşimi</p>
+<p style="font-size:26px;background:#DCE6EF;color:#13233A;padding:10px 22px;border-radius:999px">3 · Azami girdi uzunluğu</p>
+<p style="font-size:26px;background:#DCE6EF;color:#13233A;padding:10px 22px;border-radius:999px">4 · Boyut ve hız</p>
+<p style="font-size:26px;background:#F6DCCB;color:#13233A;padding:10px 22px;border-radius:999px">5 · Kendi verinizdeki sonuç</p>
+</div>
+<p style="font-size:24px;color:#5E6878">Model adları hızla değişir. Ön eleme için MTEB sıralamasına bakın, kararı 50–100 soruluk kendi setinizde verin.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">30 / 49</p>
+</section>
+<section class="slide" id="m2-kurallar" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M2 · Altın kurallar</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Embedding ile çalışırken üç kural</h2>
+</div>
+<div style="display:flex;flex-direction:column;gap:24px">
+<div style="display:flex;gap:32px;align-items:center;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:32px 40px"><p style="font-size:64px;font-weight:600;color:#2F6690;width:80px">1</p><p style="font-size:32px;line-height:1.4;color:#13233A">İndeksleme ve sorgu için <b>aynı</b> modeli ve aynı sürümü kullanın.</p></div>
+<div style="display:flex;gap:32px;align-items:center;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:32px 40px"><p style="font-size:64px;font-weight:600;color:#2F6690;width:80px">2</p><p style="font-size:32px;line-height:1.4;color:#13233A">Modeli değiştirirseniz <b>tüm</b> koleksiyonu yeniden vektörleştirin; model adını metadata'da saklayın.</p></div>
+<div style="display:flex;gap:32px;align-items:center;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:32px 40px"><p style="font-size:64px;font-weight:600;color:#2F6690;width:80px">3</p><p style="font-size:32px;line-height:1.4;color:#13233A">Vektörün yanında orijinal metni de saklayın: model vektörü değil, metni okur.</p></div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">31 / 49</p>
+</section>
+<section class="slide" id="m2-vektordb" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M2 · Vektör veritabanı</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Milyonlarca vektör arasından en yakını milisaniyede bulmak</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:40px">
+<h3 style="font-size:36px;font-weight:600;color:#13233A">Brute force · kesin</h3>
+<p style="font-size:28px;line-height:1.45">Soruyu <b>her</b> vektörle karşılaştırır.</p>
+<p style="font-size:28px;line-height:1.45">10 milyon parça × 1024 boyut ≈ her soruda 10 milyar çarpma.</p>
+<p style="font-size:28px;line-height:1.45;color:#2F6690"><b>Yüz binlerin altında yeterli</b>; demolarımız böyle çalışır.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FDFCFA;border:1px solid #D9D6CC;border-top:8px solid #2F6690;border-radius:16px;padding:40px">
+<h3 style="font-size:36px;font-weight:600;color:#13233A">ANN · yaklaşık</h3>
+<p style="font-size:28px;line-height:1.45">Aramayı uzayın küçük bir kısmıyla sınırlar.</p>
+<p style="font-size:28px;line-height:1.45">Gerçek en yakın 10 komşudan biri arada kaçabilir. İyi ayarlanmış indeks %95–99'unu bulur.</p>
+<p style="font-size:28px;line-height:1.45;color:#2F6690"><b>Hız için küçük bir doğruluk bedeli.</b></p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">32 / 49</p>
+</section>
+<section class="slide" id="m2-hnsw" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M2 · HNSW, en yaygın indeks</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Önce otoyol, sonra ana cadde, en son sokak</h2>
+</div>
+<div style="display:flex;gap:48px">
+<div style="flex:3;display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;align-items:center;gap:24px;background:#DCE6EF;border-radius:14px;padding:24px 32px"><p style="width:220px;font-size:28px;font-weight:600;color:#13233A">Otoyol</p><p style="font-size:26px;line-height:1.4">Az düğüm, uzun atlamalar: doğru semte hızla ulaş</p></div>
+<div style="display:flex;align-items:center;gap:24px;background:#E8E6DF;border-radius:14px;padding:24px 32px"><p style="width:220px;font-size:28px;font-weight:600;color:#13233A">Ana cadde</p><p style="font-size:26px;line-height:1.4">Daha çok düğüm: doğru mahalleye yaklaş</p></div>
+<div style="display:flex;align-items:center;gap:24px;background:#F6DCCB;border-radius:14px;padding:24px 32px"><p style="width:220px;font-size:28px;font-weight:600;color:#13233A">Sokak</p><p style="font-size:26px;line-height:1.4">Tüm düğümler, kısa bağlantılar: tam kapıyı bul</p></div>
+<p style="font-size:26px;line-height:1.45">Arama üst katmandan başlar; her katmanda hedefe en yakın düğüme atlayıp bir alta iner.</p>
+</div>
+<div style="flex:2;display:flex;flex-direction:column;gap:16px">
+<table style="font-size:24px;color:#3B4859">
+<tr style="background:#13233A"><th style="width:45%;color:#F6F5F1">Ayar</th><th style="width:55%;color:#F6F5F1">Artırırsanız</th></tr>
+<tr style="background:#FDFCFA"><td><b>M</b></td><td>Daha iyi isabet, daha çok bellek</td></tr>
+<tr style="background:#EFEDE6"><td><b>ef_construction</b></td><td>Daha iyi indeks, yavaş kurulum</td></tr>
+<tr style="background:#FDFCFA"><td><b>ef_search</b></td><td>Daha iyi isabet, yavaş sorgu</td></tr>
+</table>
+<p style="font-size:24px;line-height:1.45">Büyük ölçekte IVF (önce doğru rafı bul) ve PQ (vektörleri sıkıştır) devreye girer. Çoğu banka projesi için HNSW yeterlidir.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">33 / 49</p>
+</section>
+<section class="slide" id="m2-filtre" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M2 · Metadata filtreleme</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">“Yalnızca Kredi departmanının yürürlükteki dokümanlarında ara”</h2>
+</div>
+<div style="display:flex;gap:28px">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:32px"><h3 style="font-size:34px;font-weight:600;color:#13233A">Önce filtrele</h3><p style="font-size:26px;line-height:1.45">Doğru sonuç verir; çok dar filtrelerde indeks verimsizleşebilir.</p></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:32px"><h3 style="font-size:34px;font-weight:600;color:#13233A">Sonra filtrele</h3><p style="font-size:26px;line-height:1.45">Hızlıdır; ama filtre darsa ilk 5 sonucun çoğu elenir, elinizde 1–2 sonuç kalır.</p></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FDFCFA;border:1px solid #D9D6CC;border-top:8px solid #2F6690;border-radius:16px;padding:32px"><h3 style="font-size:34px;font-weight:600;color:#13233A">Arama içinde filtrele</h3><p style="font-size:26px;line-height:1.45">Modern vektör veritabanlarının yolu; kurumsal RAG için tercih edilen.</p></div>
+</div>
+<div style="display:flex;align-items:center;gap:24px;background:#13233A;border-radius:16px;padding:32px 40px">
+<svg style="color:#F0A06A;width:48px;height:48px;flex:none" aria-hidden="true"
+  class="lucide lucide-triangle-alert"
+  xmlns="http://www.w3.org/2000/svg"
+ 
+ 
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" />
+  <path d="M12 9v4" />
+  <path d="M12 17h.01" />
+</svg>
+<p style="font-size:30px;line-height:1.4;color:#F6F5F1">Yetki filtresinde doğruluk bir güvenlik meselesidir. 3. gün bu konuya ayrıntılı döneceğiz.</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">34 / 49</p>
+</section>
+<section class="slide" id="m2-urunler" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M2 · Ürün seçenekleri</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Önce kurumda zaten çalışan sisteme bakın</h2>
+</div>
+<table style="font-size:25px;color:#3B4859">
+<tr style="background:#13233A"><th style="width:30%;color:#F6F5F1">Seçenek</th><th style="width:38%;color:#F6F5F1">Güçlü yanı</th><th style="width:32%;color:#F6F5F1">Bankacılık açısından</th></tr>
+<tr style="background:#FDFCFA"><td><b>PostgreSQL + pgvector</b></td><td>Ek altyapı yok; SQL ve yetki altyapısı hazır</td><td>En kolay giriş</td></tr>
+<tr style="background:#EFEDE6"><td><b>Elasticsearch / OpenSearch</b></td><td>Anahtar kelime ve vektör tek yerde</td><td>Çoğu bankada zaten kurulu</td></tr>
+<tr style="background:#FDFCFA"><td><b>Qdrant · Milvus · Weaviate</b></td><td>Yüksek performans, güçlü filtreleme</td><td>Kurum içine kurulabilir</td></tr>
+<tr style="background:#EFEDE6"><td><b>Chroma · FAISS</b></td><td>Prototip ve eğitim için pratik</td><td>Üretim için genelde yetersiz</td></tr>
+<tr style="background:#FDFCFA"><td><b>Yönetilen bulut hizmetleri</b></td><td>İşletme yükü yok</td><td>Veri yerleşimine dikkat</td></tr>
+</table>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">35 / 49</p>
+</section>
+<section class="slide" id="demo-1-1" data-transition="push" style="background:#E07B3F;color:#13233A;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px;display:flex;flex-direction:column;justify-content:space-between">
+<div style="display:flex;flex-direction:column;gap:28px">
+<p style="font-size:32px;font-weight:700;letter-spacing:3px;color:#F6F5F1;background:#13233A;padding:14px 32px;border-radius:999px;align-self:start">▶ CANLI DEMO 1.1</p>
+<h1 style="font-size:88px;font-weight:600;line-height:1.08;color:#13233A">Token ve embedding: anlamı sayıya çevirmek</h1>
+</div>
+<div style="display:flex;gap:28px">
+<div style="flex:2;display:flex;flex-direction:column;gap:12px;background:#FDFCFA;border-radius:16px;padding:32px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;color:#B4521C">NE GÖRECEĞİZ</p>
+<ul style="font-size:28px;line-height:1.5;color:#13233A">
+<li>Aynı cümle Türkçede ve İngilizcede kaç token?</li>
+<li>Tahmin oyunu: hangi cümle çifti en benzer?</li>
+<li>Üç konunun vektör haritasında üç küme oluşturması</li>
+</ul>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#13233A;border-radius:16px;padding:32px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;color:#F0A06A">NOTEBOOK</p>
+<p style="font-size:28px;line-height:1.4;color:#F6F5F1">Gun1_RAG_Temeller<br>Bölüm: Canlı Demo 1.1</p>
+</div>
+</div>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#13233A">36 / 49</p>
+</section>
+<section class="slide" id="m3-bolum" data-transition="push" style="background:#13233A;color:#F6F5F1;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center;gap:32px">
+<div style="position:absolute;left:0;top:0;width:24px;height:1080px;background:#E07B3F"></div>
+<p style="font-size:28px;font-weight:600;letter-spacing:3px;color:#F0A06A">MODÜL 3</p>
+<h1 style="font-size:112px;font-weight:600;line-height:1.05;color:#F6F5F1">Doküman İçe Aktarma (Ingestion)</h1>
+<p style="font-family:'Source Serif 4', Georgia, serif;font-style:italic;font-size:44px;line-height:1.3;color:#BFCAD6">Ham dokümanı aranabilir, anlamlı ve yönetilebilir parçalara dönüştürmek</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#BFCAD6">37 / 49</p>
+</section>
+<section class="slide" id="m3-ifade" data-transition="fade" style="background:#E8E6DF;color:#13233A;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center;gap:40px">
+<p style="font-family:'Source Serif 4', Georgia, serif;font-size:84px;font-weight:400;line-height:1.2;color:#13233A">RAG sorunlarının çoğu modelden değil;<br><i>kötü okunmuş tablolardan, yanlış bölünmüş metinlerden ve eksik metadata'dan</i> çıkar.</p>
+<p style="font-size:30px;line-height:1.45;color:#3B4859">Ingestion, kaliteyi en çok belirleyen ama en az ilgi gören kısımdır.</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">38 / 49</p>
+</section>
+<section class="slide" id="m3-hat" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M3 · İçe aktarma hattı</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Ham dosyadan vektör veritabanına yedi adım</h2>
+</div>
+<div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:24px">
+<div style="display:flex;flex-direction:column;gap:8px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:28px"><p style="font-size:24px;font-weight:600;color:#B4521C">1</p><h3 style="font-size:30px;font-weight:600;color:#13233A">Bağlan</h3><p style="font-size:24px;line-height:1.4">Dosya sunucusu, SharePoint, doküman yönetimi</p></div>
+<div style="display:flex;flex-direction:column;gap:8px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:28px"><p style="font-size:24px;font-weight:600;color:#B4521C">2</p><h3 style="font-size:30px;font-weight:600;color:#13233A">Ayrıştır</h3><p style="font-size:24px;line-height:1.4">Metin, başlıklar, tablolar</p></div>
+<div style="display:flex;flex-direction:column;gap:8px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:28px"><p style="font-size:24px;font-weight:600;color:#B4521C">3</p><h3 style="font-size:30px;font-weight:600;color:#13233A">Temizle</h3><p style="font-size:24px;line-height:1.4">Üstbilgi, sayfa no, bozuk satırlar</p></div>
+<div style="display:flex;flex-direction:column;gap:8px;background:#FDFCFA;border:1px solid #D9D6CC;border-top:8px solid #E07B3F;border-radius:16px;padding:28px"><p style="font-size:24px;font-weight:600;color:#B4521C">4</p><h3 style="font-size:30px;font-weight:600;color:#13233A">Parçala</h3><p style="font-size:24px;line-height:1.4">Anlam bütünlüğünü koruyarak</p></div>
+<div style="display:flex;flex-direction:column;gap:8px;background:#FDFCFA;border:1px solid #D9D6CC;border-top:8px solid #E07B3F;border-radius:16px;padding:28px"><p style="font-size:24px;font-weight:600;color:#B4521C">5</p><h3 style="font-size:30px;font-weight:600;color:#13233A">Zenginleştir</h3><p style="font-size:24px;line-height:1.4">Kaynak, tarih, yetki metadata'sı</p></div>
+<div style="display:flex;flex-direction:column;gap:8px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:28px"><p style="font-size:24px;font-weight:600;color:#B4521C">6</p><h3 style="font-size:30px;font-weight:600;color:#13233A">Vektörleştir</h3><p style="font-size:24px;line-height:1.4">Embedding modelinden geçir</p></div>
+<div style="display:flex;flex-direction:column;gap:8px;background:#13233A;border-radius:16px;padding:28px"><p style="font-size:24px;font-weight:600;color:#F0A06A">7</p><h3 style="font-size:30px;font-weight:600;color:#F6F5F1">Yaz</h3><p style="font-size:24px;line-height:1.4;color:#BFCAD6">Vektör + metin + metadata</p></div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">39 / 49</p>
+</section>
+<section class="slide" id="m3-ayristirma" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M3 · Ayrıştırma</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Her dosya türünün kendi tuzağı var</h2>
+</div>
+<table style="font-size:25px;color:#3B4859">
+<tr style="background:#13233A"><th style="width:22%;color:#F6F5F1">Kaynak</th><th style="width:40%;color:#F6F5F1">Tipik sorun</th><th style="width:38%;color:#F6F5F1">Yaklaşım</th></tr>
+<tr style="background:#FDFCFA"><td><b>Metin PDF</b></td><td>Çok sütunda okuma sırası karışır</td><td>Yerleşim farkında ayrıştırıcı</td></tr>
+<tr style="background:#EFEDE6"><td><b>Taranmış PDF</b></td><td>Metin yok, sadece resim</td><td>OCR; ı, ş, ğ kalitesini test et</td></tr>
+<tr style="background:#FDFCFA"><td><b>Tablolar</b></td><td>Satır-sütun ilişkisi kaybolur</td><td>Markdown/HTML tablo olarak sakla</td></tr>
+<tr style="background:#EFEDE6"><td><b>Word</b></td><td>Genelde temiz</td><td>Başlık hiyerarşisini koru</td></tr>
+<tr style="background:#FDFCFA"><td><b>Excel</b></td><td>Hücre yapısı, birleşik hücreler</td><td>Çoğu zaman RAG yerine SQL</td></tr>
+<tr style="background:#EFEDE6"><td><b>E-posta</b></td><td>Alıntılar, imzalar, tekrarlar</td><td>Zinciri ayır, tekrarları at</td></tr>
+</table>
+<p style="font-size:28px;line-height:1.45"><b style="color:#13233A">Altın kural:</b> Ayrıştırılmış metne gözünüzle bakın. En yaygın hata, çıktıya bakmadan indekslemektir.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">40 / 49</p>
+</section>
+<section class="slide" id="m3-neden-chunk" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M3 · Neden parçalıyoruz?</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">50 sayfalık bir yönergenin tek vektörü, hiçbir soruya tam benzemez</h2>
+</div>
+<div style="display:flex;gap:28px">
+<div style="flex:1;display:flex;flex-direction:column;gap:8px"><h3 style="font-size:30px;font-weight:600;color:#13233A">Girdi sınırı</h3><p style="font-size:25px;line-height:1.45">Embedding modeli belirli uzunluğun ötesini kodlayamaz.</p></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px"><h3 style="font-size:30px;font-weight:600;color:#13233A">İsabet</h3><p style="font-size:25px;line-height:1.45">Uzun metnin vektörü onlarca konunun ortalamasıdır.</p></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px"><h3 style="font-size:30px;font-weight:600;color:#13233A">Odak</h3><p style="font-size:25px;line-height:1.45">Modele yalnızca ilgili paragraf gider.</p></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px"><h3 style="font-size:30px;font-weight:600;color:#13233A">Maliyet</h3><p style="font-size:25px;line-height:1.45">Daha az token, daha hızlı ve ucuz cevap.</p></div>
+</div>
+<div style="display:flex;gap:28px">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FDFCFA;border:1px solid #D9D6CC;border-left:8px solid #2F6690;border-radius:16px;padding:32px">
+<h3 style="font-size:32px;font-weight:600;color:#13233A">Yeterince küçük</h3>
+<p style="font-size:26px;line-height:1.45">Arama isabetli olsun diye</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FDFCFA;border:1px solid #D9D6CC;border-left:8px solid #E07B3F;border-radius:16px;padding:32px">
+<h3 style="font-size:32px;font-weight:600;color:#13233A">Yeterince büyük</h3>
+<p style="font-size:26px;line-height:1.45">Kendi başına anlamlı olsun diye: “Bu oran %2'dir” tek başına neyin oranı?</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">41 / 49</p>
+</section>
+<section class="slide" id="m3-stratejiler" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M3 · Parçalama stratejileri</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Bankacılıkta en değerli strateji yapıya saygı duyandır</h2>
+</div>
+<table style="font-size:25px;color:#3B4859">
+<tr style="background:#13233A"><th style="width:26%;color:#F6F5F1">Strateji</th><th style="width:42%;color:#F6F5F1">Nasıl çalışır</th><th style="width:32%;color:#F6F5F1">Ne zaman</th></tr>
+<tr style="background:#FDFCFA"><td><b>Sabit boyut</b></td><td>Her N token'da bir böler</td><td>Hızlı başlangıç</td></tr>
+<tr style="background:#EFEDE6"><td><b>Recursive</b></td><td>Paragraf, sığmazsa cümle, sığmazsa kelime</td><td>İyi bir varsayılan</td></tr>
+<tr style="background:#F6DCCB"><td><b>Yapı-duyarlı</b></td><td>Başlık, madde, bölüm sınırlarından böler</td><td><b>Yönetmelik, prosedür, sözleşme</b></td></tr>
+<tr style="background:#EFEDE6"><td><b>Semantik</b></td><td>Anlamın değiştiği yerden böler</td><td>Yapısız uzun metin</td></tr>
+<tr style="background:#FDFCFA"><td><b>Cümle penceresi</b></td><td>Cümleyle arar, çevresiyle verir</td><td>Hassas eşleşme</td></tr>
+<tr style="background:#EFEDE6"><td><b>Ebeveyn–çocuk</b></td><td>Küçükle arar, büyüğü verir</td><td>2. günde ayrıntılı</td></tr>
+</table>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">42 / 49</p>
+</section>
+<section class="slide" id="m3-ayarlar" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M3 · Başlangıç ayarları</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">İyi bir başlangıç noktası, ama kesin cevap değil</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:40px">
+<p style="font-size:88px;font-weight:600;line-height:1;color:#2F6690">300–800</p>
+<h3 style="font-size:32px;font-weight:600;color:#13233A">token parça boyutu</h3>
+<p style="font-size:26px;line-height:1.45">Kısa, yoğun maddelerde alt uç; anlatı metinlerinde üst uç.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:40px">
+<p style="font-size:88px;font-weight:600;line-height:1;color:#2F6690">%10–20</p>
+<h3 style="font-size:32px;font-weight:600;color:#13233A">örtüşme</h3>
+<p style="font-size:26px;line-height:1.45">Sınıra düşen cümle iki parçada da bulunsun diye.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#13233A;border-radius:16px;padding:40px">
+<p style="font-size:88px;font-weight:600;line-height:1;color:#F0A06A">Token</p>
+<h3 style="font-size:32px;font-weight:600;color:#F6F5F1">ile ölçün</h3>
+<p style="font-size:26px;line-height:1.45;color:#BFCAD6">Karakterle değil: Türkçede karakter–token oranı farklıdır.</p>
+</div>
+</div>
+<p style="font-size:28px;line-height:1.45">Doğru ayarı kendi değerlendirme setinizde birkaç seçeneği karşılaştırarak bulursunuz (2. gün).</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">43 / 49</p>
+</section>
+<section class="slide" id="m3-baglam" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M3 · Parçaya bağlam kazandırmak</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Tek başına okunan parça nereden geldiğini bilmeli</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:32px">
+<p style="font-size:24px;font-weight:600;color:#5E6878">ÖNCE</p>
+<p style="font-family:'IBM Plex Mono', monospace;font-size:26px;line-height:1.5;color:#13233A">Kalan vadesi 36 ay ve altında olan kredilerde tazminat %1'dir.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FDFCFA;border:1px solid #D9D6CC;border-top:8px solid #E07B3F;border-radius:16px;padding:32px">
+<p style="font-size:24px;font-weight:600;color:#B4521C">SONRA · BAŞLIK ZİNCİRİ</p>
+<p style="font-family:'IBM Plex Mono', monospace;font-size:26px;line-height:1.5;color:#13233A"><b>Bireysel Kredi Yönergesi &gt; Madde 4.3 Erken Ödeme</b><br>Kalan vadesi 36 ay ve altında olan kredilerde tazminat %1'dir.</p>
+</div>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:8px"><h3 style="font-size:30px;font-weight:600;color:#13233A">Başlık zinciri</h3><p style="font-size:25px;line-height:1.45">Basit ve çok etkili. Demolarımızda bunu kullanıyoruz.</p></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px"><h3 style="font-size:30px;font-weight:600;color:#13233A">Bağlamsal özet</h3><p style="font-size:25px;line-height:1.45">Bir LLM her parçaya “dokümanın neresi, ne hakkında” notu yazar. Etkili ama ek maliyetli.</p></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px"><h3 style="font-size:30px;font-weight:600;color:#13233A">Metadata ile taşımak</h3><p style="font-size:25px;line-height:1.45">Bölüm ve madde bilgisi ayrı alanlarda saklanıp modele birlikte verilir.</p></div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">44 / 49</p>
+</section>
+<section class="slide" id="m3-metadata" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M3 · Metadata tasarımı</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Her parça yanında kimliğini taşır</h2>
+</div>
+<div style="display:flex;gap:40px">
+<div style="flex:1;display:flex;flex-direction:column;background:#13233A;border-radius:16px;padding:32px">
+<p style="font-family:'IBM Plex Mono', monospace;font-size:24px;line-height:1.5;color:#E8E6DF">{<br>&#160;&#160;"id": "krd-yon-v3::Madde 4.2",<br>&#160;&#160;"title": "Bireysel Kredi Yönergesi",<br>&#160;&#160;"version": "3",<br>&#160;&#160;"section": "Madde 4.2 – Gelir Belgesi",<br>&#160;&#160;"department": "bireysel_krediler",<br>&#160;&#160;"status": "yururlukte",<br>&#160;&#160;"effective_date": "2025-07-01",<br>&#160;&#160;"allowed_groups": ["tum_personel"],<br>&#160;&#160;"embedding_model": "bge-m3"<br>}</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;flex-direction:column;gap:4px"><h3 style="font-size:30px;font-weight:600;color:#13233A">Kaynak göstermek</h3><p style="font-size:25px;line-height:1.4">id, başlık, bölüm, sayfa</p></div>
+<div style="display:flex;flex-direction:column;gap:4px"><h3 style="font-size:30px;font-weight:600;color:#13233A">Filtrelemek</h3><p style="font-size:25px;line-height:1.4">departman, tür, yürürlük durumu</p></div>
+<div style="display:flex;flex-direction:column;gap:4px"><h3 style="font-size:30px;font-weight:600;color:#13233A">Yetkilendirmek</h3><p style="font-size:25px;line-height:1.4">gizlilik, izinli gruplar</p></div>
+<div style="display:flex;flex-direction:column;gap:4px"><h3 style="font-size:30px;font-weight:600;color:#13233A">Hattı yönetmek</h3><p style="font-size:25px;line-height:1.4">sürüm, içerik özeti, model adı</p></div>
+<p style="font-size:25px;line-height:1.4;color:#B4521C"><b>Yürürlükten kalkmış bir yönergenin cevap üretmesi, bir uyum riskidir.</b></p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">45 / 49</p>
+</section>
+<section class="slide" id="m3-otomasyon" data-transition="fade" style="background:#F6F5F1;color:#3B4859;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#B4521C">M3 · Hattın otomasyonu</p>
+<h2 style="font-size:60px;font-weight:600;line-height:1.1;color:#13233A">Bir yönerge güncellendiğinde sistem bunu nasıl öğrenir?</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px">
+<div style="display:flex;flex-direction:column;gap:8px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:28px"><h3 style="font-size:30px;font-weight:600;color:#13233A">Ne değişti?</h3><p style="font-size:24px;line-height:1.45">İçerik özeti (hash) aynıysa atla; boşa embedding yapma.</p></div>
+<div style="display:flex;flex-direction:column;gap:8px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:28px"><h3 style="font-size:30px;font-weight:600;color:#13233A">Nasıl güncellenir?</h3><p style="font-size:24px;line-height:1.45">Dokümanın eski parçalarını sil, yenilerini yaz.</p></div>
+<div style="display:flex;flex-direction:column;gap:8px;background:#FDFCFA;border:1px solid #D9D6CC;border-top:8px solid #E07B3F;border-radius:16px;padding:28px"><h3 style="font-size:30px;font-weight:600;color:#13233A">Silinen doküman?</h3><p style="font-size:24px;line-height:1.45">Parçaları da silinmeli; yoksa olmayan kurala dayanarak cevap verilir.</p></div>
+<div style="display:flex;flex-direction:column;gap:8px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:28px"><h3 style="font-size:30px;font-weight:600;color:#13233A">Ne sıklıkla?</h3><p style="font-size:24px;line-height:1.45">Kritik içerikte doküman yüklenir yüklenmez; diğerlerinde her gece.</p></div>
+<div style="display:flex;flex-direction:column;gap:8px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:28px"><h3 style="font-size:30px;font-weight:600;color:#13233A">Model değişirse?</h3><p style="font-size:24px;line-height:1.45">Yeni indeks kur, test et, trafiği sonra çevir.</p></div>
+<div style="display:flex;flex-direction:column;gap:8px;background:#FDFCFA;border:1px solid #D9D6CC;border-radius:16px;padding:28px"><h3 style="font-size:30px;font-weight:600;color:#13233A">Hata olursa?</h3><p style="font-size:24px;line-height:1.45">Okunamayan dosya sessizce atlanmaz; raporlanır.</p></div>
+</div>
+<p style="font-size:28px;line-height:1.45"><b style="color:#13233A">Kişisel veri için doğru yer de burası:</b> indekse girmeyen veri sızmaz (3. gün).</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#5E6878">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#5E6878">46 / 49</p>
+</section>
+<section class="slide" id="demo-1-2" data-transition="push" style="background:#E07B3F;color:#13233A;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px;display:flex;flex-direction:column;justify-content:space-between">
+<div style="display:flex;flex-direction:column;gap:28px">
+<p style="font-size:32px;font-weight:700;letter-spacing:3px;color:#F6F5F1;background:#13233A;padding:14px 32px;border-radius:999px;align-self:start">▶ CANLI DEMO 1.2</p>
+<h1 style="font-size:88px;font-weight:600;line-height:1.08;color:#13233A">Gerçek bir mevzuat PDF'i: ayrıştır, temizle, parçala</h1>
+</div>
+<div style="display:flex;gap:28px">
+<div style="flex:2;display:flex;flex-direction:column;gap:12px;background:#FDFCFA;border-radius:16px;padding:32px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;color:#B4521C">NE GÖRECEĞİZ</p>
+<ul style="font-size:28px;line-height:1.5;color:#13233A">
+<li>KVKK PDF'inin ham hali: kırık satırlar, sayfa numaraları</li>
+<li>“MADDE 5 –” kalıbıyla madde sınırlarını bulmak</li>
+<li>Sabit boyut ve madde bazlı bölmenin farkı</li>
+</ul>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#13233A;border-radius:16px;padding:32px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;color:#F0A06A">NOTEBOOK</p>
+<p style="font-size:28px;line-height:1.4;color:#F6F5F1">Gun1_RAG_Temeller<br>Bölüm: Canlı Demo 1.2</p>
+</div>
+</div>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#13233A">47 / 49</p>
+</section>
+<section class="slide" id="uyg-1" data-transition="push" style="background:#E07B3F;color:#13233A;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px;display:flex;flex-direction:column;justify-content:space-between">
+<div style="display:flex;flex-direction:column;gap:28px">
+<p style="font-size:32px;font-weight:700;letter-spacing:3px;color:#F6F5F1;background:#13233A;padding:14px 32px;border-radius:999px;align-self:start">▶ UYGULAMA 1 · CANLI</p>
+<h1 style="font-size:88px;font-weight:600;line-height:1.08;color:#13233A">Erdağı Bank: parçala, vektörleştir, ara</h1>
+</div>
+<div style="display:flex;gap:28px">
+<div style="flex:2;display:flex;flex-direction:column;gap:12px;background:#FDFCFA;border-radius:16px;padding:32px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;color:#B4521C">ADIMLAR</p>
+<ol style="font-size:28px;line-height:1.5;color:#13233A">
+<li>Erdağı Bank PDF'leri ve manifest dosyası GitHub'dan Colab'a indirilir</li>
+<li>PDF'ten metin çıkarılır: gürültü temizlenir, maddeler bulunur, metadata manifest'ten eklenir</li>
+<li>Her madde bir parça olur; parçalar vektöre çevrilip indekse konur</li>
+<li>İlk arama: “150 bin liralık kredi için hangi belge?”</li>
+<li>Filtresiz ve filtreli arama: eski sürüm aramadan nasıl çıkar</li>
+<li>Kendi sorunuzla arama: doğru bölüm geliyor mu</li>
+</ol>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#13233A;border-radius:16px;padding:32px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;color:#F0A06A">NOTEBOOK</p>
+<p style="font-size:28px;line-height:1.4;color:#F6F5F1">Gun1_RAG_Temeller<br>Bölüm 3 · Hücre 11–18</p>
+<p style="font-size:24px;line-height:1.4;color:#BFCAD6">Colab'da T4 GPU ile, hücreler sırayla çalıştırılır.</p>
+</div>
+</div>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#13233A">48 / 49</p>
+</section>
+<section class="slide" id="d1-ozet" data-transition="fade" style="background:#13233A;color:#F6F5F1;font-family:'IBM Plex Sans', Arial, sans-serif;padding:120px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#F0A06A">1. günün sonu</p>
+<h2 style="font-size:96px;font-weight:600;line-height:1.05;color:#F6F5F1">Teşekkür ederim</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:3;display:flex;flex-direction:column;gap:12px;border-top:4px solid #F0A06A;padding-top:24px">
+<h3 style="font-size:34px;font-weight:600;color:#F6F5F1">Eğitim dosyaları</h3>
+<p style="font-family:'IBM Plex Mono', monospace;font-size:34px;line-height:1.3;color:#F0A06A">github.com/erturkerdagi/tbb-rag-egitimi</p>
+<p style="font-size:26px;line-height:1.45;color:#BFCAD6">Üç günün notebook'ları ve Erdağı Bank dokümanları. Notebook'lar doğrudan Colab'da açılır.</p>
+</div>
+<div style="flex:2;display:flex;flex-direction:column;gap:12px;border-top:4px solid #F0A06A;padding-top:24px">
+<h3 style="font-size:34px;font-weight:600;color:#F6F5F1">Sorular</h3>
+<p style="font-size:26px;line-height:1.45;color:#BFCAD6">Bugünün konularıyla ilgili sorularınızı alabilirim.</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;background:#1E3350;border-radius:16px;padding:32px 40px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;color:#F0A06A">YARIN · 2. GÜN</p>
+<p style="font-size:30px;line-height:1.45;color:#F6F5F1">Bulunan parçalardan kaynaklı cevap üretmek, bunu bir servise dönüştürmek ve kaliteyi sayıyla ölçmek.</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1400px;font-size:24px;color:#BFCAD6">TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları · 1. Gün</p>
+<p data-num="1" style="position:absolute;right:128px;bottom:64px;width:200px;font-size:24px;font-variant-numeric:tabular-nums;text-align:right;color:#BFCAD6">49 / 49</p>
+</section>
+
+</div></div>
+<nav id="nav" aria-label="Slayt gezinme">
+<button id="prev" aria-label="Önceki slayt" title="Önceki (←)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+<span id="count" aria-live="polite"></span>
+<button id="next" aria-label="Sonraki slayt" title="Sonraki (→)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+<button id="fs" aria-label="Tam ekran" title="Tam ekran (F)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg></button>
+</nav>
+<script>
+(function(){
+var s=[].slice.call(document.querySelectorAll('.slide')),n=s.length,i=0,deck=document.getElementById('deck');
+function fit(){var k=Math.min(innerWidth/1920,innerHeight/1080);deck.style.transform='scale('+k+')';}
+function go(j){j=Math.max(0,Math.min(n-1,j));s[i].classList.remove('active');i=j;s[i].classList.add('active');
+document.getElementById('count').textContent=(i+1)+' / '+n;document.getElementById('prev').disabled=i===0;document.getElementById('next').disabled=i===n-1;
+document.getElementById('bar').style.width=((i+1)/n*100)+'%';try{history.replaceState(null,'','#'+(i+1));}catch(e){}}
+var h=parseInt((location.hash||'').slice(1),10);go(h>0?h-1:0);fit();addEventListener('resize',fit);addEventListener('hashchange',function(){var h=parseInt(location.hash.slice(1),10);if(h>0&&h-1!==i)go(h-1)});
+document.getElementById('prev').onclick=function(){go(i-1)};document.getElementById('next').onclick=function(){go(i+1)};
+function fs(){if(document.fullscreenElement)document.exitFullscreen();else if(document.documentElement.requestFullscreen)document.documentElement.requestFullscreen();}
+document.getElementById('fs').onclick=fs;
+addEventListener('keydown',function(e){var k=e.key;
+if(k==='ArrowRight'||k==='PageDown'||k===' '||k==='Enter'){e.preventDefault();go(i+1)}
+else if(k==='ArrowLeft'||k==='PageUp'||k==='Backspace'){e.preventDefault();go(i-1)}
+else if(k==='Home'){go(0)}else if(k==='End'){go(n-1)}else if(k==='f'||k==='F'){fs()}});
+var x0=null;addEventListener('touchstart',function(e){x0=e.touches[0].clientX},{passive:true});
+addEventListener('touchend',function(e){if(x0===null)return;var dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>50)go(i+(dx<0?1:-1));x0=null});
+var t;function wake(){document.body.classList.remove('idle');clearTimeout(t);t=setTimeout(function(){document.body.classList.add('idle')},2500)}
+addEventListener('mousemove',wake);wake();
+})();
+</script></body></html>
