@@ -1,4 +1,4 @@
-# TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları — Eğitim Materyali
+# TBB · RAG ile Kurumsal Yapay Zeka Uygulamaları - Eğitim Materyali
 
 Türkiye Bankalar Birliği için hazırlanan üç günlük online eğitimin uygulama dosyaları.
 
